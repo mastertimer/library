@@ -1,5 +1,8 @@
-﻿#include <fstream>
-#include "basic.h"
+﻿#include "basic.h"
+
+#define NOMINMAX
+#include <windows.h>
+#include <fstream>
 
 namespace
 {
@@ -30,6 +33,46 @@ i64 position1_64(u64 a)
 	}
 	if (i64 k = position1_8[(a >> 8) & 255]) return k + 8;
 	return position1_8[a & 255];
+}
+
+void set_clipboard_text(std::wstring_view text)
+{
+	if (OpenClipboard(0))//открываем буфер обмена
+	{
+		HGLOBAL hgBuffer;
+		char* chBuffer;
+		EmptyClipboard(); //очищаем буфер
+		size_t ll = text.size() * 2 + 2;
+		hgBuffer = GlobalAlloc(GMEM_DDESHARE, ll);//выделяем память
+		if (!hgBuffer) goto end;
+		chBuffer = (char*)GlobalLock(hgBuffer); //блокируем память
+		if (!chBuffer) goto end;
+		memcpy(chBuffer, text.data(), ll);
+		GlobalUnlock(hgBuffer);//разблокируем память
+		SetClipboardData(CF_UNICODETEXT, hgBuffer);//помещаем текст в буфер обмена
+	end:
+		CloseClipboard(); //закрываем буфер обмена
+	}
+}
+
+void set_clipboard_text(astr text)
+{
+	if (OpenClipboard(0))//открываем буфер обмена
+	{
+		HGLOBAL hgBuffer;
+		char* chBuffer;
+		EmptyClipboard(); //очищаем буфер
+		size_t ll = strlen(text) + 1;
+		hgBuffer = GlobalAlloc(GMEM_DDESHARE, ll);//выделяем память
+		if (!hgBuffer) goto end;
+		chBuffer = (char*)GlobalLock(hgBuffer); //блокируем память
+		if (!chBuffer) goto end;
+		strcpy_s(chBuffer, ll, LPCSTR(text));
+		GlobalUnlock(hgBuffer);//разблокируем память
+		SetClipboardData(CF_TEXT, hgBuffer);//помещаем текст в буфер обмена
+	end:
+		CloseClipboard(); //закрываем буфер обмена
+	}
 }
 
 bool save_file(std::wstring_view fn, const char* data, i64 n)
@@ -320,7 +363,7 @@ std::string double_to_string(double a, int z)
 	s += std::to_string(b);
 	if (z < 1) return s;
 	int l = (int)s.size();
-	s.resize(i64(1) + l + z);
+	s.resize(1i64 + l + z);
 	s[l] = '.';
 	for (int i = 1; i <= z; i++)
 	{
@@ -530,7 +573,7 @@ u64 _bit_vector::pop(uchar n)
 	uchar bi = bit_read & 63;
 	bit_read += n;
 	if (bi + n <= 64) return (data[r] >> bi) & mask1(n);
-	return ((data[r] >> bi) | (data[r + 1] << (uchar(64) - bi))) & mask1(n);
+	return ((data[r] >> bi) | (data[r + 1] << (64ui8 - bi))) & mask1(n);
 }
 
 void _bit_vector::push(u64 a)

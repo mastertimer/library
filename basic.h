@@ -15,6 +15,7 @@ using wstr   = const wchar_t*;
 
 #define t_t template <typename _t>
 #define t_b template <typename _b>
+#define t_t_b template <typename _t, typename _b>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,6 +36,7 @@ constexpr i64 bit8[256] = {
 	3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,	4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8 };
 
 inline i64 bit16(ushort x) { return bit8[x & 255] + bit8[x >> 8]; }
+inline i64 bit32(uint x) { return bit8[x & 255] + bit8[(x >> 8) & 255] + bit8[(x >> 16) & 255] + bit8[x >> 24]; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -53,6 +55,9 @@ i64 position1_64(u64 a);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void memset32(uint* destination, uint value, i64 size);
+
+void set_clipboard_text(astr text);
+void set_clipboard_text(std::wstring_view text);
 
 bool save_file(std::wstring_view fn, const char* data, i64 n);
 bool load_file(std::wstring_view fn, char** data, i64* n, i64 spare_bytes = 0);
