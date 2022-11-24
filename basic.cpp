@@ -12,24 +12,24 @@ namespace
 
 }
 
-i64 position1_64(u64 a)
+uchar position1_64(u64 a)
 { // **
 	if (a >> 32)
 	{
 		if (a >> 48)
 		{
-			if (i64 k = position1_8[a >> 56]) return k + 56;
+			if (auto k = position1_8[a >> 56]) return k + 56;
 			return position1_8[(a >> 48) & 255] + 48;
 		}
-		if (i64 k = position1_8[(a >> 40) & 255]) return k + 40;
+		if (auto k = position1_8[(a >> 40) & 255]) return k + 40;
 		return position1_8[(a >> 32) & 255] + 32;
 	}
 	if (a & 0xffff0000ULL)
 	{
-		if (i64 k = position1_8[(a >> 24) & 255]) return k + 24;
+		if (auto k = position1_8[(a >> 24) & 255]) return k + 24;
 		return position1_8[(a >> 16) & 255] + 16;
 	}
-	if (i64 k = position1_8[(a >> 8) & 255]) return k + 8;
+	if (auto k = position1_8[(a >> 8) & 255]) return k + 8;
 	return position1_8[a & 255];
 }
 
@@ -551,17 +551,17 @@ void _bit_vector::pushnod(u64 a, u64 n)
 	u64 aa = (a & 1) ? 0xffffffffffffffff : 0;
 	if (n <= 64)
 	{
-		push(aa, n);
+		push(aa, (uchar)n);
 		return;
 	}
 	if (bit < 64)
 	{
-		u64 nn = 64 - bit;
+		uchar nn = 64 - bit;
 		push(aa, nn);
 		n -= nn;
 	}
 	for (; n >= 64; n -= 64) data.push_back(aa);
-	push(aa, n);
+	push(aa, (uchar)n);
 }
 
 void _bit_vector::push(u64 a, uchar n)
