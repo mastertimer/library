@@ -11,9 +11,13 @@ struct _ixy // индекс, номер
 
 	_ixy(int x_,    int y_)    : x(x_), y(y_) {}
 	_ixy(i64 x_,    i64 y_)    : x(x_), y(y_) {}
-	_ixy(i64 x_,    double y_) : x(x_), y(y_) { if ((y_ < 0) && (y != y_)) y--; }
-	_ixy(double x_, i64 y_)    : x(x_), y(y_) { if ((x_ < 0) && (x != x_)) x--; }
-	_ixy(double x_, double y_) : x(x_), y(y_) {	if ((x_ < 0) && (x != x_)) x--;	if ((y_ < 0) && (y != y_)) y--;	}
+	_ixy(i64 x_,    double y_) : x(x_), y((i64)y_) { if ((y_ < 0) && (y != y_)) y--; }
+	_ixy(double x_, i64 y_)    : x((i64)x_), y(y_) { if ((x_ < 0) && (x != x_)) x--; }
+	_ixy(double x_, double y_) : x((i64)x_), y((i64)y_)
+	{ 
+		if ((x_ < 0) && (x != x_)) x--;
+		if ((y_ < 0) && (y != y_)) y--;
+	}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,8 +100,8 @@ struct _iinterval // [...)
 	_iinterval(i64 x) : min(x), max(x + 1) {}
 	_iinterval(int min_, int max_) : min(min_), max(max_) {}
 	_iinterval(i64 min_, i64 max_) : min(min_), max(max_) {}
-	_iinterval(i64 min_, double max_) : min(min_), max(max_) { if ((max_ > 0) || (max == max_)) max++; }
-	_iinterval(double min_, i64 max_) : min(min_), max(max_) { if ((min_ < 0) && (min != min_)) min--; }
+	_iinterval(i64 min_, double max_) : min(min_), max((i64)max_) { if ((max_ > 0) || (max == max_)) max++; }
+	_iinterval(double min_, i64 max_) : min((i64)min_), max(max_) { if ((min_ < 0) && (min != min_)) min--; }
 	_iinterval(double min_, double max_);
 
 	void operator=(i64 b) { min = b; max = b + 1; }
@@ -153,7 +157,7 @@ struct _interval // [...])
 	_interval() = default;
 	_interval(double x) : min(x), max(x), empty(false) {}
 	_interval(double min_, double max_) : min(min_), max(max_), empty(max < min) {}
-	_interval(_iinterval b) : min(b.min), max(b.max), empty(max <= min), right_closed(false) {}
+	_interval(_iinterval b) : min((double)b.min), max((double)b.max), empty(max <= min), right_closed(false) {}
 
 	operator _iinterval() const;
 

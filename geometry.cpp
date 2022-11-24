@@ -130,7 +130,7 @@ _area::_area(_interval x_, _interval y_) : x(x_), y(y_)
 {
 }
 
-_area::_area(_isize b) : x{ 0.0, b.x}, y{ 0.0, b.y}
+_area::_area(_isize b) : x{ 0.0, double(b.x)}, y{ 0.0, double(b.y)}
 {
 	x.empty = b.empty();
 	x.right_closed = y.right_closed = false;
@@ -278,7 +278,7 @@ void _trans::scale_up(_xy b, double m)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-_iinterval::_iinterval(double min_, double max_) : min(min_), max(max_)
+_iinterval::_iinterval(double min_, double max_) : min((i64)min_), max((i64)max_)
 {
 	if ((min_ < 0) && (min != min_)) min--;
 	if ((max_ > 0) || (max == max_)) max++;
