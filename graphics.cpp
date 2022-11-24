@@ -1328,16 +1328,16 @@ void _picture::fill_rectangle(_area r, _color c)
 		auto c2 = &pixel(a.x.min, a.y.min);
 		if (a.x.length() == 1) // точка
 		{
-			c.a *= (r.x.max - r.x.min) * (r.y.max - r.y.min);
+			c.a = uchar(c.a * (r.x.max - r.x.min) * (r.y.max - r.y.min));
 			if (transparent) c2->mix2(c); else c2->mix(c);
 			return;
 		}
 
-		c.a = ca * (r.y.max - r.y.min) * (a.x.min + 1 - r.x.min);
+		c.a = uchar(ca * (r.y.max - r.y.min) * (a.x.min + 1 - r.x.min));
 		if (transparent) c2->mix2(c); else c2->mix(c);
 		c2++;
 
-		c.a = ca * (r.y.max - r.y.min);
+		c.a = uchar(ca * (r.y.max - r.y.min));
 		i64 d = a.x.min - a.x.max + 3;
 		if (transparent)
 		{
@@ -1350,7 +1350,7 @@ void _picture::fill_rectangle(_area r, _color c)
 			while (d <= 0) { cmix.mix(*c2); c2++; d++; }
 		}
 
-		c.a = ca * (r.y.max - r.y.min) * (r.x.max - a.x.max + 1);
+		c.a = uchar(ca * (r.y.max - r.y.min) * (r.x.max - a.x.max + 1));
 		if (transparent) c2->mix2(c); else c2->mix(c);
 
 		return;
@@ -1359,11 +1359,11 @@ void _picture::fill_rectangle(_area r, _color c)
 	{
 		auto c2 = &pixel(a.x.min, a.y.min);
 
-		c.a = ca * (r.x.max - r.x.min) * (a.y.min + 1 - r.y.min);
+		c.a = uchar(ca * (r.x.max - r.x.min) * (a.y.min + 1 - r.y.min));
 		if (transparent) c2->mix2(c); else c2->mix(c);
 		c2 += size.x;
 
-		c.a = ca * (r.x.max - r.x.min);
+		c.a = uchar(ca * (r.x.max - r.x.min));
 		i64 d = a.y.min - a.y.max + 3;
 		if (transparent)
 		{
@@ -1376,7 +1376,7 @@ void _picture::fill_rectangle(_area r, _color c)
 			while (d <= 0) { cmix.mix(*c2); c2 += size.x; d++; }
 		}
 
-		c.a = ca * (r.x.max - r.x.min) * (r.y.max - a.y.max + 1);
+		c.a = uchar(ca * (r.x.max - r.x.min) * (r.y.max - a.y.max + 1));
 		if (transparent) c2->mix2(c); else c2->mix(c);
 
 		return;
@@ -1389,11 +1389,11 @@ void _picture::fill_rectangle(_area r, _color c)
 		if (y == a.y.min) k2 = a.y.min + 1 - r.y.min;
 		if (y == a.y.max - 1) k2 = r.y.max - a.y.max + 1;
 
-		c.a = ca * k2 * (a.x.min + 1 - r.x.min);
+		c.a = uchar(ca * k2 * (a.x.min + 1 - r.x.min));
 		if (transparent) c2->mix2(c); else c2->mix(c);
 		c2++;
 
-		c.a = ca * k2;
+		c.a = uchar(ca * k2);
 		if (c.a == 255)
 		{
 			auto d = a.x.max - a.x.min - 2;
@@ -1414,7 +1414,7 @@ void _picture::fill_rectangle(_area r, _color c)
 				while (d <= 0) { cmix.mix(*c2); c2++; d++; }
 			}
 		}
-		c.a = ca * k2 * (r.x.max - a.x.max + 1);
+		c.a = uchar(ca * k2 * (r.x.max - a.x.max + 1));
 		if (transparent) c2->mix2(c); else c2->mix(c);
 	}
 }
@@ -1451,14 +1451,14 @@ t_t_b void _picture_functions::fill_ring3(_iarea area, _xy p, double r, double r
 				{
 					if (dd >= ddmax)
 					{
-						c.a = ca * (rrmax - dd) / drr;
+						c.a = uchar(ca * (rrmax - dd) / drr);
 						_b::mix2(c, *cc);
 					}
 					else
 					{ // тонкое кольцо
 						double m1 = (ddmax - dd) / ddd;
-						c.a = ca * ((rrmax - dd) / drr - m1);
-						c2.a = c2a * m1;
+						c.a = uchar(ca * ((rrmax - dd) / drr - m1));
+						c2.a = uchar(c2a * m1);
 						_b::mixmix2(c, c2, *cc);
 					}
 				}
@@ -1466,8 +1466,8 @@ t_t_b void _picture_functions::fill_ring3(_iarea area, _xy p, double r, double r
 				else
 				{
 					double m1 = (ddmax - dd) / ddd;
-					c.a = ca * (1.0 - m1);
-					c2.a = c2a * m1;
+					c.a = uchar(ca * (1.0 - m1));
+					c2.a = uchar(c2a * m1);
 					_b::mixmix2(c, c2, *cc);
 				}
 			}
@@ -1535,19 +1535,19 @@ t_t_b void _picture_functions::ring3(_iarea area, _xy p, double r, double r2, _c
 				{
 					if (dd >= ddmax)
 					{
-						c.a = ca * (rrmax - dd) * drr;
+						c.a = uchar(ca * (rrmax - dd) * drr);
 						_b::mix2(c, *cc);
 					}
 					else
 					{ // тонкое кольцо! !!! исправить отриц. коэффмфиент p = {58.1263671875, 33.2783203125} r = 0.6 d = 0.4 c = 0xff4ed850
-						c.a = ca * ((rrmax - dd) * drr - (ddmax - dd) * ddd);
+						c.a = uchar(ca * ((rrmax - dd) * drr - (ddmax - dd) * ddd));
 						_b::mix2(c, *cc);
 					}
 				}
 				else if (dd >= ddmax) cmix.mix(*cc);
 				else
 				{
-					c.a = ca * (dd - ddmin) * ddd;
+					c.a = uchar(ca * (dd - ddmin) * ddd);
 					_b::mix2(c, *cc);
 				}
 			}
@@ -1603,7 +1603,7 @@ t_t_b void _picture_functions::fill_circle3(_iarea area, _xy p, double r, _color
 			{
 				if (dd > rrmin)
 				{
-					c.a = ca * (rrmax - dd) / drr;
+					c.a = uchar(ca * (rrmax - dd) / drr);
 					_b::mix2(c, *cc);
 				}
 				else cmix.mix(*cc);
