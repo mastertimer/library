@@ -33,19 +33,19 @@ uchar position1_64(u64 a)
 	return position1_8[a & 255];
 }
 
-bool save_file(std::wstring_view fn, const char* data, i64 n)
+bool save_file(const std::filesystem::path& fn, const char* data, i64 n)
 {
-	std::ofstream f(fn.data(), std::ofstream::binary);
+	std::ofstream f(fn, std::ofstream::binary);
 	if (!f) return false;
 	f.write((char*)data, n);
 	return f.good();
 }
 
-bool load_file(std::wstring_view fn, char** data, i64* n, i64 spare_bytes)
+bool load_file(const std::filesystem::path& fn, char** data, i64* n, i64 spare_bytes)
 {
 	*data = nullptr;
 	*n    = 0;
-	std::ifstream f(fn.data(), std::ofstream::binary);
+	std::ifstream f(fn, std::ofstream::binary);
 	if (!f) return false;
 	f.seekg(0, f.end);
 	auto size = f.tellg();
@@ -62,10 +62,10 @@ bool load_file(std::wstring_view fn, char** data, i64* n, i64 spare_bytes)
 	return true;
 }
 
-bool load_file(std::wstring_view fn, std::vector<uchar>& res)
+bool load_file(const std::filesystem::path& fn, std::vector<uchar>& res)
 {
 	res.clear();
-	std::ifstream f(fn.data(), std::ofstream::binary);
+	std::ifstream f(fn, std::ofstream::binary);
 	if (!f) return false;
 	f.seekg(0, f.end);
 	auto siz = f.tellg();
