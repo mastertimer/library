@@ -127,7 +127,7 @@ struct _bitmap : public _picture
 	uint f_c = 0; // цвет шрифта
 	uint f_cf = 0; // цвет фона шрифта
 
-	std::wstring_view get_font_name();
+	std::wstring get_font_name();
 	void set_font(std::wstring_view name, bool bold);
 	void podg_font(int r); // подготовка шрифта в выводу
 	void podg_cc(uint c, uint cf); // подготовка цветов к выводу

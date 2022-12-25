@@ -1759,7 +1759,7 @@ void _bitmap::podg_cc(uint c, uint cf)
 	}
 }
 
-std::wstring_view _bitmap::get_font_name()
+std::wstring _bitmap::get_font_name()
 {
 	return font.lfFaceName;
 }
