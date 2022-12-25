@@ -84,7 +84,7 @@ struct _picture
 	void line(_ixy p1, _ixy p2, uint c, bool rep = false);
 	void lines(_xy p1, _xy p2, double l, uint c); // точная линия заданной толщины
 	void text16(_ixy p, std::string_view st, uint c, uint bg = 0); // простой текст высотой 16
-	void text16n(i64 x, i64 y, astr s, i64 n, uint c, uint bg = 0); // простой текст высотой 16*n
+	void text16n(i64 x, i64 y, std::string_view st, i64 n, uint c, uint bg = 0); // простой текст высотой 16*n
 	static _isize size_text16(std::string_view s, i64 n = 1); // размер текста *n
 
 	void fill_ring(_xy p, double r, double d, _color c, _color c2);

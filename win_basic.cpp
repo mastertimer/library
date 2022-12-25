@@ -24,19 +24,19 @@ void set_clipboard_text(std::wstring_view text)
 	}
 }
 
-void set_clipboard_text(astr text)
+void set_clipboard_text(std::string_view text)
 {
 	if (OpenClipboard(0))//открываем буфер обмена
 	{
 		HGLOBAL hgBuffer;
 		char* chBuffer;
 		EmptyClipboard(); //очищаем буфер
-		size_t ll = strlen(text) + 1;
+		size_t ll = text.size() + 1;
 		hgBuffer = GlobalAlloc(GMEM_DDESHARE, ll);//выделяем память
 		if (!hgBuffer) goto end;
 		chBuffer = (char*)GlobalLock(hgBuffer); //блокируем память
 		if (!chBuffer) goto end;
-		strcpy_s(chBuffer, ll, LPCSTR(text));
+		strcpy_s(chBuffer, ll, LPCSTR(text.data()));
 		GlobalUnlock(hgBuffer);//разблокируем память
 		SetClipboardData(CF_TEXT, hgBuffer);//помещаем текст в буфер обмена
 	end:

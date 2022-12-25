@@ -1077,11 +1077,11 @@ _isize _picture::size_text16(std::string_view s, i64 n)
 	return { l * n, ly * n };
 }
 
-void _picture::text16n(i64 x, i64 y, astr s, i64 n, uint c, uint bg)
+void _picture::text16n(i64 x, i64 y, std::string_view st, i64 n, uint c, uint bg)
 {
 	if (n < 1) return;
-	if (n == 1) return text16({ x, y }, s, c, bg);
-	auto text_area = size_text16(s, n).move({ x,y }) & drawing_area;
+	if (n == 1) return text16({ x, y }, st, c, bg);
+	auto text_area = size_text16(st, n).move({ x,y }) & drawing_area;
 	if (text_area.empty()) return;
 	fill_rectangle(text_area, { bg });
 	constexpr int ly = 13;
@@ -1100,10 +1100,12 @@ void _picture::text16n(i64 x, i64 y, astr s, i64 n, uint c, uint bg)
 	i64 j1 = ly;
 	if (y < drawing_area.y.min) j0 = (drawing_area.y.min + n - 1 - y) / n;
 	if (y + ly * n > drawing_area.y.max) j1 = (drawing_area.y.max - y) / n;
-	while ((*s) && (*s != '\n') && (x < drawing_area.x.max))
+
+	for (auto s : st)
 	{
-		i64 probel = (*s == 32) ? 4 : 1;
-		const ushort* ss = font16[(uchar)(*s++)];
+		if (x >= drawing_area.x.max) break;
+		i64 probel = (s == 32) ? 4 : 1;
+		const ushort* ss = font16[(uchar)s];
 		i64 lx = lx2;
 		for (i64 j = lx - 1; j >= 0; j--)
 		{

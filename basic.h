@@ -11,7 +11,6 @@ using ushort = unsigned short;
 using uint   = unsigned int;
 using u64    = unsigned long long;
 using i64    = long long;
-using astr   = const char*;
 using wstr   = const wchar_t*;
 
 #define t_t template <typename _t>

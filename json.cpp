@@ -324,7 +324,7 @@ void _rjson::end()
 	start = false;
 }
 
-astr _rjson::read_just_string()
+const char* _rjson::read_just_string()
 {
 	if (error) return "";
 	char c = 0;
@@ -370,7 +370,7 @@ bool _rjson::read_start(std::string_view name)
 	return false;
 }
 
-astr _rjson::read_string(std::string_view name)
+const char* _rjson::read_string(std::string_view name)
 {
 	if (!read_start(name)) return "";
 	return read_just_string();
@@ -482,7 +482,7 @@ void _rjson::read(std::string_view name, _multi_string& b)
 	if (!arr(name)) return;
 	while (!error)
 	{
-		astr s = read_string();
+		const char* s = read_string();
 		if (null) break;
 		b.line.push_back(string_to_wstring2(s));
 	}
@@ -495,7 +495,7 @@ void _rjson::read(std::string_view name, _picture& b, uint c00, uint cc1)
 	if (!arr(name)) return;
 	while (!error)
 	{
-		astr s = read_string();
+		const char* s = read_string();
 		if (null) break;
 		temp.push_back(s);
 	}
@@ -536,7 +536,7 @@ void _rjson::read_mem(std::string_view name, void* b, u64 size)
 
 void _rjson::read(std::string_view name, std::wstring& b)
 {
-	astr ss = read_string(name);
+	const char* ss = read_string(name);
 	if (error || null) return;
 	b = string_to_wstring2(ss);
 }

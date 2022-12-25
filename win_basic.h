@@ -7,7 +7,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void set_clipboard_text(astr text);
+void set_clipboard_text(std::string_view text);
 void set_clipboard_text(std::wstring_view text);
 
 std::filesystem::path get_exe_path(HINSTANCE hinstance);
