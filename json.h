@@ -13,7 +13,7 @@ struct _multi_string;
 
 struct _wjson
 {
-	_wjson(std::wstring_view fn);
+	_wjson(const std::filesystem::path& fn);
 	~_wjson() { end(); }
 
 	_wjson& str(std::string_view name = "", bool lin = false); // стуктура
@@ -58,7 +58,7 @@ struct _rjson
 	int error = 0; // если != 0, файл сломан, все функции сразу должны вылетать
 	bool null = false;
 
-	_rjson(std::wstring_view fn);
+	_rjson(const std::filesystem::path& fn);
 
 	bool obj(std::string_view name = ""); // стуктура
 	bool arr(std::string_view name = ""); // массив

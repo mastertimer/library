@@ -1,7 +1,5 @@
 ﻿#include "win_basic.h"
 
-#define NOMINMAX
-#include <windows.h>
 #include <fstream>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +42,15 @@ void set_clipboard_text(astr text)
 	end:
 		CloseClipboard(); //закрываем буфер обмена
 	}
+}
+
+std::filesystem::path get_exe_path(HINSTANCE hinstance)
+{
+	wchar_t buffer[MAX_PATH];
+	GetModuleFileNameW(hinstance, buffer, MAX_PATH);
+	std::filesystem::path fn = buffer;
+	fn.remove_filename();
+	return fn;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
