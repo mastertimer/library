@@ -41,10 +41,10 @@ struct _e_terminal : public _ui_element
 	void text_clear() { text.clear(); }
 	void start_timer();
 	void stop_timer(std::wstring_view s);
-
-protected: 
-	void ris2(_trans tr) override;
 	void run() override;
+
+protected:
+	void ris2(_trans tr) override;
 	void key_down(ushort key) override;
 	void key_press(ushort key) override;
 	bool mouse_wheel2(_xy r) override;

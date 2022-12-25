@@ -18,6 +18,8 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	void ris(_trans tr); // нарисовать
 	void add_child(std::shared_ptr<_ui_element> element);
 
+	virtual void run();
+
 protected:
 	_ui* ui;
 	_area local_area;
@@ -26,7 +28,6 @@ protected:
 	_color c2{ 0 };
 
 	virtual void ris2(_trans tr);
-	virtual void run();
 	virtual void key_down(ushort key);
 	virtual void key_press(ushort key);
 	virtual bool mouse_wheel2(_xy r);
@@ -70,6 +71,7 @@ struct _ui
 	_ui();
 	void add_changed_area(_area a);
 	void draw(_isize r);
+	void run_timer1000();
 
 private:
 };
