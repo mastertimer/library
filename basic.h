@@ -13,8 +13,6 @@ using u64    = unsigned long long;
 using i64    = long long;
 
 #define t_t template <typename _t>
-#define t_b template <typename _b>
-#define t_t_b template <typename _t, typename _b>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -133,8 +131,8 @@ struct _stack
 	bool save_to_file(const std::filesystem::path& fn);
 	bool load_from_file(const std::filesystem::path& fn);
 
-	t_b _stack& operator<<(const std::vector<_b>& b);
-	t_b _stack& operator<<(_b a);
+	t_t _stack& operator<<(const std::vector<_t>& b);
+	t_t _stack& operator<<(_t a);
 	    _stack& operator<<(const _stack& a);
 		_stack& operator<<(const _bit_vector& p);
 		_stack& operator<<(const std::wstring& a);
@@ -144,8 +142,8 @@ struct _stack
 	    _stack& operator>>(_stack& a);
 		_stack& operator>>(_bit_vector& p);
 		_stack& operator>>(std::wstring& s);
-	t_b _stack& operator>>(std::vector<_b>& b);
-	t_b _stack& operator>>(_b& a);
+	t_t _stack& operator>>(std::vector<_t>& b);
+	t_t _stack& operator>>(_t& a);
 	    void    pop_data(void* data2, i64 vdata);
 
 	void revert(i64 bytes); // вернуть данные
@@ -155,22 +153,22 @@ private:
 	void set_capacity(i64 rdata); // изменить размер массива в большую сторону
 };
 
-t_b _stack& _stack::operator<<(const std::vector<_b>& b)
+t_t _stack& _stack::operator<<(const std::vector<_t>& b)
 {
 	*this << (uint)b.size();
 	for (auto& i : b) *this << i;
 	return *this;
 }
 
-t_b _stack& _stack::operator<<(_b a)
+t_t _stack& _stack::operator<<(_t a)
 {
-	if (size + (i64)sizeof(_b) > capacity) set_capacity((size + sizeof(_b)) * 2);
-	*((_b*)(data + size)) = a;
-	size += sizeof(_b);
+	if (size + (i64)sizeof(_t) > capacity) set_capacity((size + sizeof(_t)) * 2);
+	*((_t*)(data + size)) = a;
+	size += sizeof(_t);
 	return *this;
 }
 
-t_b _stack& _stack::operator>>(std::vector<_b>& b)
+t_t _stack& _stack::operator>>(std::vector<_t>& b)
 {
 	uint v;
 	*this >> v;
@@ -179,11 +177,11 @@ t_b _stack& _stack::operator>>(std::vector<_b>& b)
 	return *this;
 }
 
-t_b _stack& _stack::operator>>(_b& a)
+t_t _stack& _stack::operator>>(_t& a)
 {
-	if (adata + (i64)sizeof(_b) > size) return *this;
-	a = *((_b*)(data + adata));
-	adata += sizeof(_b);
+	if (adata + (i64)sizeof(_t) > size) return *this;
+	a = *((_t*)(data + adata));
+	adata += sizeof(_t);
 	return *this;
 }
 

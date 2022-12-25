@@ -37,8 +37,8 @@ t_t struct __hash_table
 	void clear() noexcept { id++; size = 0; }
 	bool insert(const _t& b) noexcept; // return - элемента небыло? (!!присваивание в любом случае!!)
 	bool insert(_t&& b) noexcept; // return - элемента небыло? (!!присваивание в любом случае!!)
-	t_b _iterator find(const _b& x); // хэш функции должны одинаковые значания выдавать
-	t_b void erase(const _b& x) { erase(find(x)); } // удалить элемент
+	template <typename _b> _iterator find(const _b& x); // хэш функции должны одинаковые значания выдавать
+	template <typename _b> void erase(const _b& x) { erase(find(x)); } // удалить элемент
 	void erase(_t* x); // удалить элемент
 	void erase(const _iterator& x); // удалить элемент
 
@@ -76,7 +76,7 @@ t_t void __hash_table<_t>::erase(_t* x)
 		erase(find(*x));
 }
 
-t_t t_b typename __hash_table<_t>::_iterator __hash_table<_t>::find(const _b& x)
+t_t template <typename _b> typename __hash_table<_t>::_iterator __hash_table<_t>::find(const _b& x)
 {
 	if (size * 2 >= capacity) reserve(); // 3x - 1.25 итерации, 2x - 1.5 итерации, 1.5x - 2.0 итерации
 	uint i;

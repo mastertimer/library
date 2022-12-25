@@ -12,9 +12,9 @@ struct _picture_functions : public _picture
 	t_t void vertical_line(i64 x, _iinterval y, _color c);
 	t_t void horizontal_line(_iinterval x, i64 y, _color c);
 	t_t void fill_rectangle3(_iarea r, _color c);
-	t_t_b void fill_circle3(_iarea area, _xy p, double r, _color c);
-	t_t_b void ring3(_iarea area, _xy p, double r, double r2, _color c);
-	t_t_b void fill_ring3(_iarea area, _xy p, double r, double r2, _color c, _color c2);
+	template <typename _t, typename _b> void fill_circle3(_iarea area, _xy p, double r, _color c);
+	template <typename _t, typename _b> void ring3(_iarea area, _xy p, double r, double r2, _color c);
+	template <typename _t, typename _b> void fill_ring3(_iarea area, _xy p, double r, double r2, _color c, _color c2);
 };
 
 struct _color_substitution
@@ -1421,7 +1421,7 @@ void _picture::fill_rectangle(_area r, _color c)
 	}
 }
 
-t_t_b void _picture_functions::fill_ring3(_iarea area, _xy p, double r, double r2, _color c, _color c2)
+template <typename _t, typename _b> void _picture_functions::fill_ring3(_iarea area, _xy p, double r, double r2, _color c, _color c2)
 {
 	double rrmin = (r - 0.5) * (r - 0.5);
 	double rrmax = (r + 0.5) * (r + 0.5);
@@ -1504,7 +1504,7 @@ void _picture::fill_ring(_xy p, double r, double d, _color c, _color c2)
 		((_picture_functions*)this)->fill_ring3<_color_overlay, _color_overlay>(area, p, r, r2, c, c2);
 }
 
-t_t_b void _picture_functions::ring3(_iarea area, _xy p, double r, double r2, _color c)
+template <typename _t, typename _b> void _picture_functions::ring3(_iarea area, _xy p, double r, double r2, _color c)
 {
 	double rrmin = (r - 0.5) * (r - 0.5);
 	double rrmax = (r + 0.5) * (r + 0.5);
@@ -1581,7 +1581,7 @@ void _picture::ring(_xy p, double r, double d, _color c)
 		((_picture_functions*)this)->ring3<_color_overlay, _color_overlay>(area, p, r, r2, c);
 }
 
-t_t_b void _picture_functions::fill_circle3(_iarea area, _xy p, double r, _color c)
+template <typename _t, typename _b> void _picture_functions::fill_circle3(_iarea area, _xy p, double r, _color c)
 {
 	double rrmin = (r - 0.5) * (r - 0.5);
 	double rrmax = (r + 0.5) * (r + 0.5);
