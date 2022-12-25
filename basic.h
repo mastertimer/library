@@ -11,7 +11,6 @@ using ushort = unsigned short;
 using uint   = unsigned int;
 using u64    = unsigned long long;
 using i64    = long long;
-using wstr   = const wchar_t*;
 
 #define t_t template <typename _t>
 #define t_b template <typename _b>
@@ -64,7 +63,7 @@ std::wstring string_to_wstring(std::string_view s);
 
 std::wstring double_to_wstring(double a, int z);
 std::string  double_to_string(double a, int z);
-wstr uint64_to_wstr_hex(u64 a);
+const wchar_t* uint64_to_wstr_hex(u64 a);
 
 std::wstring substr(std::wstring_view s, i64 n, i64 k); // подстрока которая не кидает исключения
 
@@ -131,8 +130,8 @@ struct _stack
 
 	void clear() { size  = 0; adata = 0; }
 	void erase(i64 n, i64 k);
-	bool save_to_file(std::wstring_view fn);
-	bool load_from_file(std::wstring_view fn);
+	bool save_to_file(const std::filesystem::path& fn);
+	bool load_from_file(const std::filesystem::path& fn);
 
 	t_b _stack& operator<<(const std::vector<_b>& b);
 	t_b _stack& operator<<(_b a);

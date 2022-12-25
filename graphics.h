@@ -66,8 +66,8 @@ struct _picture
 	_picture& operator=(const _picture& copy);
 	bool operator==(const _picture& pic) const;
 
-	bool save_to_file(std::wstring_view file_name);
-	bool load_from_file(std::wstring_view file_name);
+	bool save_to_file(const std::filesystem::path& file_name);
+	bool load_from_file(const std::filesystem::path& file_name);
 
 	_color* scan_line(i64 y) const { return &data2[y * size.x]; }
 
@@ -127,7 +127,7 @@ struct _bitmap : public _picture
 	uint f_c = 0; // цвет шрифта
 	uint f_cf = 0; // цвет фона шрифта
 
-	wstr get_font_name();
+	std::wstring_view get_font_name();
 	void set_font(std::wstring_view name, bool bold);
 	void podg_font(int r); // подготовка шрифта в выводу
 	void podg_cc(uint c, uint cf); // подготовка цветов к выводу

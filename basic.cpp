@@ -127,12 +127,12 @@ void _stack::erase(i64 n, i64 k)
 	memmove(&data[n], &data[n + k], size - n);
 }
 
-bool _stack::save_to_file(std::wstring_view fn)
+bool _stack::save_to_file(const std::filesystem::path& fn)
 { 
 	return save_file(fn, data, size);
 }
 
-bool _stack::load_from_file(std::wstring_view fn)
+bool _stack::load_from_file(const std::filesystem::path& fn)
 {
 	if (data) delete[] data;
 	data     = 0;
@@ -333,7 +333,7 @@ std::string double_to_string(double a, int z)
 	return s;
 }
 
-wstr uint64_to_wstr_hex(u64 a)
+const wchar_t* uint64_to_wstr_hex(u64 a)
 {
 	static const wchar_t zz[] = L"0123456789abcdef";
 	static wchar_t       s[]  = L"1234567890123456";

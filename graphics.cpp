@@ -125,7 +125,7 @@ struct _color_mixing
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool _picture::load_from_file(std::wstring_view file_name)
+bool _picture::load_from_file(const std::filesystem::path& file_name)
 {
 	_stack mem;
 	if (!mem.load_from_file(file_name)) return false;
@@ -175,7 +175,7 @@ bool _picture::load_from_file(std::wstring_view file_name)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool _picture::save_to_file(std::wstring_view file_name)
+bool _picture::save_to_file(const std::filesystem::path& file_name)
 {
 	_stack mem;
 	// BITMAPFILEHEADER
@@ -1759,7 +1759,7 @@ void _bitmap::podg_cc(uint c, uint cf)
 	}
 }
 
-wstr _bitmap::get_font_name()
+std::wstring_view _bitmap::get_font_name()
 {
 	return font.lfFaceName;
 }
