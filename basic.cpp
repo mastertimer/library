@@ -102,7 +102,7 @@ _stack::_stack(const _stack& a) : capacity(a.size), size(a.size), adata(a.adata)
 	memcpy(data, a.data, size);
 }
 
-_stack::_stack(_stack&& a) : data(a.data), capacity(a.capacity), size(a.size), adata(a.adata)
+_stack::_stack(_stack&& a) noexcept : data(a.data), capacity(a.capacity), size(a.size), adata(a.adata)
 {
 	a.data = nullptr;
 	a.capacity = a.size = a.adata = 0;

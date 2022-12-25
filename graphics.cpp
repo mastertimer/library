@@ -348,7 +348,7 @@ t_t void _picture_functions::line5_x_compact(_ixy p1, _ixy p2, _color c)
 	if (p2.x >= drawing_area.x.max) p2.x = drawing_area.x.max - 1;
 	if (p2.x < p1.x) return;
 	_t cc(c);
-	for (i64 x = p1.x; x <= p2.x; x++, y += dy_dx) cc.mix(pixel(x, y));
+	for (i64 x = p1.x; x <= p2.x; x++, y += dy_dx) cc.mix(pixel(x, (i64)y));
 }
 
 t_t void _picture_functions::line5_y_compact(_ixy p1, _ixy p2, _color c)
@@ -363,7 +363,7 @@ t_t void _picture_functions::line5_y_compact(_ixy p1, _ixy p2, _color c)
 	if (p2.y >= drawing_area.y.max) p2.y = drawing_area.y.max - 1;
 	if (p2.y < p1.y) return;
 	_t cc(c);
-	for (i64 y = p1.y; y <= p2.y; y++, x += dx_dy) cc.mix(pixel(x, y));
+	for (i64 y = p1.y; y <= p2.y; y++, x += dx_dy) cc.mix(pixel((i64)x, y));
 }
 
 t_t void _picture_functions::line5_x(_ixy p1, _ixy p2, _color c)
@@ -392,7 +392,7 @@ t_t void _picture_functions::line5_x(_ixy p1, _ixy p2, _color c)
 	if (y < drawing_area.y.min)
 	{
 		if (y2 < drawing_area.y.min) return;
-		i64 dx = (drawing_area.y.min - y) * dx_dy;
+		i64 dx = (i64)((drawing_area.y.min - y) * dx_dy);
 		p1.x += dx;
 		y += dx * dy_dx;
 		while (y < drawing_area.y.min) { p1.x++; y += dy_dx; }
@@ -400,7 +400,7 @@ t_t void _picture_functions::line5_x(_ixy p1, _ixy p2, _color c)
 	else if (y >= drawing_area.y.max)
 	{
 		if (y2 >= drawing_area.y.max) return;
-		i64 dx = (drawing_area.y.max - y) * dx_dy;
+		i64 dx = (i64)((drawing_area.y.max - y) * dx_dy);
 		p1.x += dx;
 		y += dx * dy_dx;
 		while (y >= drawing_area.y.max) { p1.x++; y += dy_dx; }
@@ -408,9 +408,9 @@ t_t void _picture_functions::line5_x(_ixy p1, _ixy p2, _color c)
 	if (p2.x < p1.x) return;
 	_t cc(c);
 	if (dy_dx > 0)
-		for (i64 x = p1.x; (x <= p2.x) && (y < drawing_area.y.max); x++, y += dy_dx) cc.mix(pixel(x, y));
+		for (i64 x = p1.x; (x <= p2.x) && (y < drawing_area.y.max); x++, y += dy_dx) cc.mix(pixel(x, (i64)y));
 	else
-		for (i64 x = p1.x; (x <= p2.x) && (y >= drawing_area.y.min); x++, y += dy_dx) cc.mix(pixel(x, y));
+		for (i64 x = p1.x; (x <= p2.x) && (y >= drawing_area.y.min); x++, y += dy_dx) cc.mix(pixel(x, (i64)y));
 }
 
 t_t void _picture_functions::line5_y(_ixy p1, _ixy p2, _color c)
@@ -439,7 +439,7 @@ t_t void _picture_functions::line5_y(_ixy p1, _ixy p2, _color c)
 	if (x < drawing_area.x.min)
 	{
 		if (x2 < drawing_area.x.min) return;
-		i64 dy = (drawing_area.x.min - x) * dy_dx;
+		i64 dy = (i64)((drawing_area.x.min - x) * dy_dx);
 		p1.y += dy;
 		x += dy * dx_dy;
 		while (x < drawing_area.x.min) { p1.y++; x += dx_dy; }
@@ -447,7 +447,7 @@ t_t void _picture_functions::line5_y(_ixy p1, _ixy p2, _color c)
 	else if (x >= drawing_area.x.max)
 	{
 		if (x2 >= drawing_area.x.max) return;
-		i64 dy = (drawing_area.x.max - x) * dy_dx;
+		i64 dy = (i64)((drawing_area.x.max - x) * dy_dx);
 		p1.y += dy;
 		x += dy * dx_dy;
 		while (x >= drawing_area.y.max) { p1.y++; x += dx_dy; }
@@ -455,9 +455,9 @@ t_t void _picture_functions::line5_y(_ixy p1, _ixy p2, _color c)
 	if (p2.y < p1.y) return;
 	_t cc(c);
 	if (dy_dx > 0)
-		for (i64 y = p1.y; (y <= p2.y) && (x < drawing_area.x.max); y++, x += dx_dy) cc.mix(pixel(x, y));
+		for (i64 y = p1.y; (y <= p2.y) && (x < drawing_area.x.max); y++, x += dx_dy) cc.mix(pixel((i64)x, y));
 	else
-		for (i64 y = p1.y; (y <= p2.y) && (x >= drawing_area.x.min); y++, x += dx_dy) cc.mix(pixel(x, y));
+		for (i64 y = p1.y; (y <= p2.y) && (x >= drawing_area.x.min); y++, x += dx_dy) cc.mix(pixel((i64)x, y));
 }
 
 t_t void _picture_functions::line5(_ixy p1, _ixy p2, _color c)
@@ -1697,7 +1697,7 @@ void _bitmap::text(_ixy p, std::wstring_view s, int h, uint c, uint bg)
 	if (text_area.empty()) return;
 	podg_font(h);
 	podg_cc(c, bg);
-	TextOutW(hdc, p.x, p.y, s.data(), (int)s.size());
+	TextOutW(hdc, (int)p.x, (int)p.y, s.data(), (int)s.size());
 }
 
 void _bitmap::text(_ixy p, std::string_view s, int h, uint c, uint bg)
@@ -1706,7 +1706,7 @@ void _bitmap::text(_ixy p, std::string_view s, int h, uint c, uint bg)
 	if (text_area.empty()) return;
 	podg_font(h);
 	podg_cc(c, bg);
-	TextOutA(hdc, p.x, p.y, s.data(), (int)s.size());
+	TextOutA(hdc, (int)p.x, (int)p.y, s.data(), (int)s.size());
 }
 
 _isize _bitmap::size_text(std::wstring_view s, int h)

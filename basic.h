@@ -123,7 +123,7 @@ struct _stack
 
 	_stack(i64 r = 0); // r - зарезервировать размер
 	_stack(const _stack &a);
-	_stack(_stack&& a);
+	_stack(_stack&& a) noexcept;
 	_stack(void* data2, int vdata); // инициализация куском памяти
 	~_stack() { delete[] data; }
 
