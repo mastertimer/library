@@ -4,7 +4,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-_e_terminal::_e_terminal(_ui& ui_): _ui_element(ui_)
+_e_terminal::_e_terminal(_ui* ui_): _ui_element(ui_)
 {
 	local_area = { {0, 100}, {0, 100} };
 	key_fokus = true;
@@ -21,9 +21,9 @@ _e_terminal::_e_terminal(_ui& ui_): _ui_element(ui_)
 void _e_terminal::ris2(_trans tr)
 {
 	std::lock_guard<std::mutex> lck(mtx);
-	std::wstring old_font = ui.canvas.get_font_name();
-	ui.canvas.set_font(L"Consolas", false);
-	if (font_width == 0) font_width = ui.canvas.size_text("0123456789", font_size).x / 10;
+	std::wstring old_font = ui->canvas.get_font_name();
+	ui->canvas.set_font(L"Consolas", false);
+	if (font_width == 0) font_width = ui->canvas.size_text("0123456789", font_size).x / 10;
 
 	std::wstring full_cmd = prefix + cmd;
 
@@ -81,45 +81,45 @@ void _e_terminal::ris2(_trans tr)
 		}
 	}
 	vis_cur = false;
-	if (_area(area_cursor) == ui.changed_area) // перерисовать только курсор
+	if (_area(area_cursor) == ui->changed_area) // перерисовать только курсор
 	{
 		if (area_cursor.empty()) goto finish; // перестраховка
-		ui.canvas.text({ area_cursor.x.min, area_cursor.y.min }, cmd.substr(cursor, 1), font_size, ui.cc2, ui.cc0);
-		if (visible_cursor) ui.canvas.fill_rectangle(area_cursor, { ui.cc3 - 0xC0000000 });
+		ui->canvas.text({ area_cursor.x.min, area_cursor.y.min }, cmd.substr(cursor, 1), font_size, ui->cc2, ui->cc0);
+		if (visible_cursor) ui->canvas.fill_rectangle(area_cursor, { ui->cc3 - 0xC0000000 });
 		goto finish;
 	}
 
-	ui.canvas.fill_rectangle(oo2, c2);
-	if ((c.a != 0x00) && (c != c2)) ui.canvas.rectangle(oo2, c);
+	ui->canvas.fill_rectangle(oo2, c2);
+	if ((c.a != 0x00) && (c != c2)) ui->canvas.rectangle(oo2, c);
 	if ((oo2.y.length() < 30) || (oo2.x.length() < 30)) goto finish;
 
 	if (full_lines > max_lines)
 	{ // ползунок
-		ui.canvas.line({ oo.x.max - 1, oo.y.min }, { oo.x.max - 1, oo.y.max }, c);
-		ui.canvas.line({ oo2.x.max, oo.y.min }, { oo.x.max - 2, oo.y.min }, c);
-		ui.canvas.line({ oo2.x.max, oo.y.max - 1 }, { oo.x.max - 2, oo.y.max - 1 }, c);
+		ui->canvas.line({ oo.x.max - 1, oo.y.min }, { oo.x.max - 1, oo.y.max }, c);
+		ui->canvas.line({ oo2.x.max, oo.y.min }, { oo.x.max - 2, oo.y.min }, c);
+		ui->canvas.line({ oo2.x.max, oo.y.max - 1 }, { oo.x.max - 2, oo.y.max - 1 }, c);
 
 		i64 tt = (oo.y.length() - otst_y * 2 - length_slider) * scrollbar / (full_lines - max_lines);
 
 		y_slider = { oo.y.max - otst_y - tt - length_slider, oo.y.max - otst_y - tt };
-		ui.canvas.fill_rectangle(_iarea{ {oo.x.max - width_scrollbar + 2, oo.x.max - 2}, y_slider }, { c });
+		ui->canvas.fill_rectangle(_iarea{ {oo.x.max - width_scrollbar + 2, oo.x.max - 2}, y_slider }, { c });
 	}
 
-	if (ui.n_act_key.get() == this)
-		ui.n_timer1000.insert(shared_from_this());
+	if (ui->n_act_key.get() == this)
+		ui->n_timer1000.insert(shared_from_this());
 	else
-		ui.n_timer1000.erase(shared_from_this());
+		ui->n_timer1000.erase(shared_from_this());
 
 	for (i64 i = 0; i < ks; i++)
 	{
 		i64 n = ks - 1 - i - scrollbar;
 		if (n < 0) break;
 		if (n >= max_lines) continue;
-		ui.canvas.text({ x_text, y_cmd - n * font_size }, full_cmd.substr(i * cmd_vis_len, cmd_vis_len),
-			font_size, ui.cc2, ui.cc0);
+		ui->canvas.text({ x_text, y_cmd - n * font_size }, full_cmd.substr(i * cmd_vis_len, cmd_vis_len),
+			font_size, ui->cc2, ui->cc0);
 	}
 
-	if (visible_cursor) ui.canvas.fill_rectangle(area_cursor, { ui.cc3 - 0xC0000000 });
+	if (visible_cursor) ui->canvas.fill_rectangle(area_cursor, { ui->cc3 - 0xC0000000 });
 
 	for (i64 i = text.size() - 1; i >= 0; i--)
 	{
@@ -134,8 +134,8 @@ void _e_terminal::ris2(_trans tr)
 			i64 n = ks - 1 - j - scrollbar;
 			if (n < 0) break;
 			if (n >= max_lines) continue;
-			ui.canvas.text({ x_text, y_cmd - n * font_size }, s.substr(j * cmd_vis_len, cmd_vis_len),
-				font_size, ui.cc1, ui.cc0);
+			ui->canvas.text({ x_text, y_cmd - n * font_size }, s.substr(j * cmd_vis_len, cmd_vis_len),
+				font_size, ui->cc1, ui->cc0);
 		}
 		if (ks - scrollbar > max_lines) break;
 	}
@@ -151,7 +151,7 @@ void _e_terminal::ris2(_trans tr)
 				i64 x1 = std::max(selection_begin.x, selection_end.x) + 1;
 				_iarea a = { {x_text + x0 * font_width, x_text + x1 * font_width},
 					{y_cmd - yy * font_size, y_cmd - (yy - 1) * font_size} };
-				ui.canvas.fill_rectangle(a, { ui.cc3 - 0xA0000000 });
+				ui->canvas.fill_rectangle(a, { ui->cc3 - 0xA0000000 });
 			}
 		}
 		else
@@ -175,27 +175,27 @@ void _e_terminal::ris2(_trans tr)
 			{
 				_iarea a = { {x_text + x1 * font_width, x_text + cmd_vis_len * font_width},
 				{y_cmd - y1 * font_size, y_cmd - (y1 - 1) * font_size} };
-				ui.canvas.fill_rectangle(a, { ui.cc3 - 0xA0000000 });
+				ui->canvas.fill_rectangle(a, { ui->cc3 - 0xA0000000 });
 			}
 			for (i64 yy = y1 - 1; yy > y0; yy--)
 				if ((yy >= 0) && (yy < max_lines))
 				{
 					_iarea a = { {x_text, x_text + cmd_vis_len * font_width},
 					{y_cmd - yy * font_size, y_cmd - (yy - 1) * font_size} };
-					ui.canvas.fill_rectangle(a, { ui.cc3 - 0xA0000000 });
+					ui->canvas.fill_rectangle(a, { ui->cc3 - 0xA0000000 });
 				}
 
 			if ((y0 >= 0) && (y0 < max_lines))
 			{
 				_iarea a = { {x_text, x_text + (x0 + 1) * font_width},
 				{y_cmd - y0 * font_size, y_cmd - (y0 - 1) * font_size} };
-				ui.canvas.fill_rectangle(a, { ui.cc3 - 0xA0000000 });
+				ui->canvas.fill_rectangle(a, { ui->cc3 - 0xA0000000 });
 			}
 		}
 	}
 
 finish:
-	ui.canvas.set_font(old_font.c_str(), false);
+	ui->canvas.set_font(old_font.c_str(), false);
 }
 
 void _e_terminal::run()
@@ -208,7 +208,7 @@ void _e_terminal::run()
 		cha_area();
 		return;
 	}
-	ui.add_changed_area(area_cursor);
+	ui->add_changed_area(area_cursor);
 	visible_cursor = !visible_cursor;
 }
 
@@ -277,7 +277,7 @@ void _e_terminal::key_down(ushort key)
 		}
 		break;
 	case 67: // c
-		if (ui.n_s_ctrl) set_clipboard();
+		if (ui->n_s_ctrl) set_clipboard();
 		break;
 	}
 	cha_area();
@@ -363,7 +363,7 @@ void _e_terminal::key_press(ushort key)
 
 bool _e_terminal::mouse_wheel2(_xy r)
 {
-	scrollbar += ui.n_wheel;
+	scrollbar += ui->n_wheel;
 	cha_area();
 	return true;
 }
@@ -371,8 +371,8 @@ bool _e_terminal::mouse_wheel2(_xy r)
 bool _e_terminal::mouse_down_left2(_xy r)
 {
 	y0_move_slider = -1;
-	r = ui.master_trans_go(r);
-	_iarea oo = ui.master_trans_go(local_area);
+	r = ui->master_trans_go(r);
+	_iarea oo = ui->master_trans_go(local_area);
 	if (r.x > oo.x.max - width_scrollbar)
 	{ // на полосе прокрутки
 		if (r.y < y_slider.min)
@@ -403,8 +403,8 @@ bool _e_terminal::mouse_down_left2(_xy r)
 
 void _e_terminal::mouse_move_left2(_xy r)
 {
-	r = ui.master_trans_go(r);
-	_iarea oo = ui.master_trans_go(local_area);
+	r = ui->master_trans_go(r);
+	_iarea oo = ui->master_trans_go(local_area);
 	if (y0_move_slider >= 0)
 	{
 		i64 ypix = oo.y.length() - otst_y * 2 - y_slider.length();

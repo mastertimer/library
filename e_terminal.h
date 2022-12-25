@@ -35,7 +35,7 @@ struct _e_terminal : public _ui_element
 	_ixy selection_begin = { -1LL,0LL }; // номер отображаемой строки и номер символа
 	_ixy selection_end = { 0LL,0LL }; // номер отображаемой строки и номер символа
 
-	_e_terminal(_ui& ui_);
+	_e_terminal(_ui* ui_);
 	void run_cmd(); // выволнить введенную команду
 	void print(std::wstring_view s); // добавить текст
 	void text_clear() { text.clear(); }

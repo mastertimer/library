@@ -12,11 +12,14 @@ struct _ui;
 struct _ui_element : public std::enable_shared_from_this<_ui_element>
 {
 
-	_ui_element(_ui& ui_);
+	_ui_element(_ui* ui_);
 	virtual ~_ui_element();
 
+	void ris(_trans tr); // нарисовать
+	void add_child(std::shared_ptr<_ui_element> element);
+
 protected:
-	_ui& ui;
+	_ui* ui;
 	_area local_area;
 	bool key_fokus = false;
 	_color c{ 0xFF208040 };
@@ -37,6 +40,8 @@ private:
 	std::optional<_area> area;
 	std::set<std::shared_ptr<_ui_element>> subelements;
 	std::shared_ptr<_ui_element> parent;
+
+	_area calc_area(); // вычислить область
 
 };
 
@@ -62,7 +67,9 @@ struct _ui
 	const _color cc3{ 0xFFA0FFC0 }; // цвет 3
 	const _color cc4{ 0xFF104020 }; // цвет 4
 
+	_ui();
 	void add_changed_area(_area a);
+	void draw(_isize r);
 
 private:
 };
