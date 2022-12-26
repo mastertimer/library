@@ -77,6 +77,7 @@ _area _ui_element::calc_area()
 void _ui_element::add_child(std::shared_ptr<_ui_element> element)
 {
 	subelements.insert(element);
+	element->parent = shared_from_this();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +106,18 @@ void _ui::draw(_isize r)
 void _ui::run_timer1000()
 {
 	for (auto element : n_timer1000) element->run();
+}
+
+void _ui::key_down(ushort key)
+{
+	if (!n_act_key) return;
+	n_act_key->key_down(key);
+}
+
+void _ui::key_press(ushort key)
+{
+	if (!n_act_key) return;
+	n_act_key->key_press(key);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -42,11 +42,11 @@ struct _e_terminal : public _ui_element
 	void start_timer();
 	void stop_timer(std::wstring_view s);
 	void run() override;
+	void key_down(ushort key) override;
+	void key_press(ushort key) override;
 
 protected:
 	void ris2(_trans tr) override;
-	void key_down(ushort key) override;
-	void key_press(ushort key) override;
 	bool mouse_wheel2(_xy r) override;
 	bool mouse_down_left2(_xy r) override;
 	void mouse_move_left2(_xy r) override;

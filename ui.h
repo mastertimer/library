@@ -11,6 +11,7 @@ struct _ui;
 
 struct _ui_element : public std::enable_shared_from_this<_ui_element>
 {
+	_area local_area;
 
 	_ui_element(_ui* ui_);
 	virtual ~_ui_element();
@@ -19,17 +20,16 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	void add_child(std::shared_ptr<_ui_element> element);
 
 	virtual void run();
+	virtual void key_down(ushort key);
+	virtual void key_press(ushort key);
 
 protected:
 	_ui* ui;
-	_area local_area;
 	bool key_fokus = false;
 	_color c{ 0xFF208040 };
 	_color c2{ 0 };
 
 	virtual void ris2(_trans tr);
-	virtual void key_down(ushort key);
-	virtual void key_press(ushort key);
 	virtual bool mouse_wheel2(_xy r);
 	virtual bool mouse_down_left2(_xy r);
 	virtual void mouse_move_left2(_xy r);
@@ -72,6 +72,8 @@ struct _ui
 	void add_changed_area(_area a);
 	void draw(_isize r);
 	void run_timer1000();
+	void key_down(ushort key);
+	void key_press(ushort key);
 
 private:
 };
