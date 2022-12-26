@@ -80,6 +80,50 @@ void _ui_element::add_child(std::shared_ptr<_ui_element> element)
 	element->parent = shared_from_this();
 }
 
+bool _ui_element::test_local_area(_xy b)
+{
+	return local_area.test(b);
+}
+
+bool _ui_element::mouse_move2(_xy r)
+{
+	return true;
+}
+
+bool _ui_element::mouse_move(_trans tr)
+{
+	for (auto element : subelements)
+	{
+		_trans tr2 = tr * element->trans;
+		if (!element->calc_area().test(tr2.inverse(ui->mouse_xy))) continue;
+		if (element->mouse_move(tr2)) return true;
+	}
+	_xy r = tr.inverse(ui->mouse_xy);
+	if (test_local_area(r)) // ДЕЙСТВИЕ
+	{
+		ui->master_trans_go = tr;
+		if (mouse_move2(r))
+		{
+			if ((ui->n_go_move.get() != this) || (ui->master_trans_go_move != ui->master_trans_go))
+			{
+				if (ui->n_go_move)
+				{
+					ui->n_go_move->mouse_finish_move();
+				}
+				ui->n_go_move = shared_from_this();
+				ui->master_trans_go_move = ui->master_trans_go;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+void _ui_element::mouse_finish_move()
+{
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 _ui::_ui()
@@ -118,6 +162,44 @@ void _ui::key_press(ushort key)
 {
 	if (!n_act_key) return;
 	n_act_key->key_press(key);
+}
+
+void _ui::mouse_move()
+{
+	if (n_tani)
+	{
+		if (!n_s_left)
+		{
+			mouse_button_left(false);
+			return;
+		}
+		n_tani->mouse_move_left2(master_trans_go.inverse(mouse_xy));
+		mouse_xy_pr = mouse_xy;
+		return;
+	}
+	if (n_perenos)
+	{
+		if (n_s_left)
+		{
+			n_ko->cha_area(n_ko->calc_area());
+			n_ko->trans.offset.x += mouse_xy.x - mouse_xy_pr.x;
+			n_ko->trans.offset.y += mouse_xy.y - mouse_xy_pr.y;
+			n_ko->cha_area(n_ko->calc_area());
+			mouse_xy_pr = mouse_xy;
+		}
+		return; // закомментировать - колесо будет работать, но курсор будет сбрасываться при выделении
+	}
+	if (!n_ko->mouse_move(n_ko->trans))
+		if (n_go_move)
+		{
+			n_go_move->mouse_finish_move();
+			n_go_move.reset();
+		}
+}
+
+void _ui::mouse_button_left(bool pressed)
+{
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -44,12 +44,12 @@ struct _e_terminal : public _ui_element
 	void run() override;
 	void key_down(ushort key) override;
 	void key_press(ushort key) override;
-
-protected:
-	void ris2(_trans tr) override;
 	bool mouse_wheel2(_xy r) override;
 	bool mouse_down_left2(_xy r) override;
 	void mouse_move_left2(_xy r) override;
+
+protected:
+	void ris2(_trans tr) override;
 
 private:
 	std::vector<std::wstring> text;
