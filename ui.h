@@ -66,6 +66,7 @@ struct _ui
 	bool n_s_left = false;
 	bool n_s_right = false;
 	bool n_s_middle = false;
+	bool n_s_double = false;
 	bool n_perenos = false;
 	i64 n_wheel = 0;
 	_xy mouse_xy{ 0, 0 };
@@ -88,7 +89,13 @@ struct _ui
 	void key_down(ushort key);
 	void key_press(ushort key);
 	void mouse_move();
-	void mouse_button_left(bool pressed);
+	void mouse_button_left_down();
+	void mouse_button_left_up();
+	void mouse_button_right_down();
+	void mouse_button_right_up();
+	void mouse_button_middle_down();
+	void mouse_button_middle_up();
+	void mouse_wheel_turn(short value);
 
 private:
 };

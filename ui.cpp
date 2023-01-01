@@ -170,7 +170,7 @@ void _ui::mouse_move()
 	{
 		if (!n_s_left)
 		{
-			mouse_button_left(false);
+			mouse_button_left_up();
 			return;
 		}
 		n_tani->mouse_move_left2(master_trans_go.inverse(mouse_xy));
@@ -197,9 +197,38 @@ void _ui::mouse_move()
 		}
 }
 
-void _ui::mouse_button_left(bool pressed)
+void _ui::mouse_button_left_down()
 {
+	n_s_left = true;
+}
 
+void _ui::mouse_button_left_up()
+{
+	n_s_left = false;
+}
+
+void _ui::mouse_button_right_down()
+{
+	n_s_right = true;
+}
+
+void _ui::mouse_button_right_up()
+{
+	n_s_right = false;
+}
+
+void _ui::mouse_button_middle_down()
+{
+	n_s_middle = true;
+}
+
+void _ui::mouse_button_middle_up()
+{
+	n_s_middle = false;
+}
+
+void _ui::mouse_wheel_turn(short value)
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
