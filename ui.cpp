@@ -28,7 +28,7 @@ void _ui_element::key_press(ushort key)
 {
 }
 
-bool _ui_element::mouse_wheel2(_xy r)
+bool _ui_element::mouse_wheel2(_xy r, short value)
 {
 	return false;
 }
@@ -122,6 +122,23 @@ bool _ui_element::mouse_move(_trans tr)
 void _ui_element::mouse_finish_move()
 {
 
+}
+
+bool _ui_element::mouse_wheel_turn(_trans tr, short value)
+{
+	for (auto element : subelements)
+	{
+		_trans tr2 = tr * element->trans;
+		if (!element->area->test(tr2.inverse(ui->mouse_xy))) continue;
+		if (element->mouse_wheel_turn(tr2, value)) return true;
+	}
+	_xy r = tr.inverse(ui->mouse_xy);
+	if (test_local_area(r)) // ДЕЙСТВИЕ
+	{
+		ui->master_trans_go = tr;
+		if (mouse_wheel2(r, value)) return true;
+	}
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,6 +246,20 @@ void _ui::mouse_button_middle_up()
 
 void _ui::mouse_wheel_turn(short value)
 {
+	if (n_perenos)
+	{
+		_xy tr = mouse_xy;
+		if ((value > 0) && (n_ko->trans.scale > 1E12)) return;
+		n_ko->cha_area(n_ko->calc_area());
+		n_ko->trans.scale_up(tr, pow(1.1, value));
+		n_ko->cha_area(n_ko->calc_area());
+		return;
+	}
+	if (n_s_right)
+	{
+		return;
+	}
+	n_ko->mouse_wheel_turn(n_ko->trans, value);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

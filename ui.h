@@ -25,10 +25,11 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	virtual void run();
 	virtual void key_down(ushort key);
 	virtual void key_press(ushort key);
-	virtual bool mouse_wheel2(_xy r);
+	virtual bool mouse_wheel2(_xy r, short value);
 	virtual bool mouse_down_left2(_xy r);
 	virtual void mouse_move_left2(_xy r);
 	bool mouse_move(_trans tr); // перемещение мышки
+	bool mouse_wheel_turn(_trans tr, short value); // поворот колеса мышки
 	virtual bool mouse_move2(_xy r); // перемещение мышки действие
 	virtual void mouse_finish_move(); // мышка ушла
 	virtual bool test_local_area(_xy b); // лежит ли точка внутри
@@ -68,7 +69,6 @@ struct _ui
 	bool n_s_middle = false;
 	bool n_s_double = false;
 	bool n_perenos = false;
-	i64 n_wheel = 0;
 	_xy mouse_xy{ 0, 0 };
 	_xy mouse_xy_pr{ 0, 0 };
 

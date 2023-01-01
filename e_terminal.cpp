@@ -361,9 +361,9 @@ void _e_terminal::key_press(ushort key)
 	vis_cur = true;
 }
 
-bool _e_terminal::mouse_wheel2(_xy r)
+bool _e_terminal::mouse_wheel2(_xy r, short value)
 {
-	scrollbar += ui->n_wheel;
+	scrollbar += value;
 	cha_area();
 	return true;
 }
