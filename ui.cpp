@@ -181,6 +181,10 @@ bool _ui_element::mouse_down_left(_trans tr)
 	return false;
 }
 
+void _ui_element::mouse_up_middle()
+{
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 _ui::_ui()
@@ -288,11 +292,13 @@ void _ui::mouse_button_right_up()
 void _ui::mouse_button_middle_down()
 {
 	n_s_middle = true;
+	mouse_move();
 }
 
 void _ui::mouse_button_middle_up()
 {
 	n_s_middle = false;
+	if (n_go_move) n_go_move->mouse_up_middle();
 }
 
 void _ui::mouse_wheel_turn(short value)
