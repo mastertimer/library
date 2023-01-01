@@ -42,6 +42,11 @@ void _ui_element::mouse_move_left2(_xy r)
 {
 }
 
+void _ui_element::mouse_up_left2(_xy r)
+{
+
+}
+
 void _ui_element::cha_area(std::optional<_area> a)
 {
 	if (!a) a = local_area;
@@ -141,6 +146,39 @@ bool _ui_element::mouse_wheel_turn(_trans tr, short value)
 	return false;
 }
 
+bool _ui_element::mouse_down_left(_trans tr)
+{
+	for (auto element : subelements)
+	{
+		_trans tr2 = tr * element->trans;
+		if (!element->area->test(tr2.inverse(ui->mouse_xy))) continue;
+		if (element->mouse_down_left(tr2)) return true;
+	}
+	_xy r = tr.inverse(ui->mouse_xy);
+	if (test_local_area(r))
+	{
+		if (key_fokus)
+		{
+			std::shared_ptr<_ui_element> b;
+			if (ui->n_act_key)
+				if (ui->n_act_key.get() != this)
+					b = ui->n_act_key;
+			ui->n_act_key = shared_from_this();
+			if (b) b->cha_area();
+			cha_area();
+		}
+		ui->master_trans_go = tr; // было в if
+		if (mouse_down_left2(r))
+		{
+			ui->n_tani = shared_from_this();
+			//				master_trans_go = tr;
+			return true;
+		}
+		if (key_fokus) return true;
+	}
+	return false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 _ui::_ui()
@@ -217,11 +255,17 @@ void _ui::mouse_move()
 void _ui::mouse_button_left_down()
 {
 	n_s_left = true;
+	mouse_xy_pr = mouse_xy;
+	if (n_perenos) return;
+	n_ko->mouse_down_left(n_ko->trans);
 }
 
 void _ui::mouse_button_left_up()
 {
 	n_s_left = false;
+	if (!n_tani) return;
+	n_tani->mouse_up_left2(master_trans_go.inverse(mouse_xy));
+	n_tani = nullptr;
 }
 
 void _ui::mouse_button_right_down()

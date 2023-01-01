@@ -28,6 +28,8 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	virtual bool mouse_wheel2(_xy r, short value);
 	virtual bool mouse_down_left2(_xy r);
 	virtual void mouse_move_left2(_xy r);
+	virtual void mouse_up_left2(_xy r); // конец перетаскивания
+	bool mouse_down_left(_trans tr); // щелчок мышки
 	bool mouse_move(_trans tr); // перемещение мышки
 	bool mouse_wheel_turn(_trans tr, short value); // поворот колеса мышки
 	virtual bool mouse_move2(_xy r); // перемещение мышки действие
