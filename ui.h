@@ -20,9 +20,11 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	void ris(_trans tr); // нарисовать
 	void add_child(std::shared_ptr<_ui_element> element);
 	void cha_area(std::optional<_area> a = std::nullopt);
+	void add_area(std::optional<_area> a = std::nullopt); // эта область добавлена
+	void del_area(std::optional<_area> a = std::nullopt); // эта область удалена
 	_area calc_area(); // вычислить область
 
-	virtual void run();
+	virtual void update();
 	virtual void key_down(ushort key);
 	virtual void key_press(ushort key);
 	virtual bool mouse_wheel2(_xy r, short value);
@@ -42,18 +44,32 @@ protected:
 	bool key_fokus = false;
 	_color c{ 0xFF208040 };
 	_color c2{ 0 };
-
-	virtual void ris2(_trans tr);
-
-
-private:
+	std::shared_ptr<_ui_element> parent;
 	std::optional<_area> area;
 	std::set<std::shared_ptr<_ui_element>> subelements;
-	std::shared_ptr<_ui_element> parent;
 
+	virtual void ris2(_trans tr);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct _e_scrollbar : public _ui_element
+{
+	double position = 0; // положение стрелки [0-1]
+	char   vid = 0; // 0 - горизонтальный 1 - вертикальный 2 - снизу 3 - справа 4 - сверху 5 - слева
+
+	_e_scrollbar(_ui* ui_);
+	~_e_scrollbar();
+
+	bool mouse_down_left2(_xy r) override;
+	void mouse_move_left2(_xy r) override;
+	void ris2(_trans tr) override;
+
+	void prilip(); // прилипание к графическому объекту
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 struct _ui
 {

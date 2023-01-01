@@ -4,7 +4,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-_e_terminal::_e_terminal(_ui* ui_): _ui_element(ui_)
+_e_terminal::_e_terminal(_ui* ui_) : _ui_element(ui_)
 {
 	local_area = { {0, 100}, {0, 100} };
 	key_fokus = true;
@@ -198,7 +198,7 @@ finish:
 	ui->canvas.set_font(old_font.c_str(), false);
 }
 
-void _e_terminal::run()
+void _e_terminal::update()
 {
 	std::lock_guard<std::mutex> lck(mtx);
 	if (need_to_update)

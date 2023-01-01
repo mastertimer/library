@@ -16,10 +16,10 @@ void _ui_element::ris2(_trans tr)
 {
 }
 
-void _ui_element::run()
+void _ui_element::update()
 {
 	auto copy_subelements = subelements;
-	for (auto element : copy_subelements) element->run();
+	for (auto element : copy_subelements) element->update();
 }
 
 void _ui_element::key_down(ushort key)
@@ -46,7 +46,6 @@ void _ui_element::mouse_move_left2(_xy r)
 
 void _ui_element::mouse_up_left2(_xy r)
 {
-
 }
 
 void _ui_element::cha_area(std::optional<_area> a)
@@ -185,6 +184,34 @@ void _ui_element::mouse_up_middle()
 {
 }
 
+void _ui_element::add_area(std::optional<_area> a)
+{
+	if (!a)
+		a = calc_area();
+	else
+		if (!(a <= area)) area.reset();
+	if (!parent)
+	{
+		if (ui->n_ko.get() == this) ui->add_changed_area(trans(*a));
+		return;
+	}
+	parent->add_area(trans(*a));
+}
+
+void _ui_element::del_area(std::optional<_area> a)
+{
+	if (!a)
+		a = calc_area();
+	else
+		if (!(a < area)) area.reset();
+	if (!parent)
+	{
+		if (ui->n_ko.get() == this) ui->add_changed_area(trans(*a));
+		return;
+	}
+	parent->del_area(trans(*a));
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 _ui::_ui()
@@ -210,7 +237,7 @@ void _ui::draw(_isize r)
 
 void _ui::run_timer1000()
 {
-	for (auto element : n_timer1000) element->run();
+	for (auto element : n_timer1000) element->update();
 }
 
 void _ui::key_down(ushort key)
@@ -320,3 +347,68 @@ void _ui::mouse_wheel_turn(short value)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+_e_scrollbar::_e_scrollbar(_ui* ui_) : _ui_element(ui_)
+{
+	local_area = { {0, 10}, {0, 10} };
+}
+
+_e_scrollbar::~_e_scrollbar()
+{
+	calc_area();
+}
+
+bool _e_scrollbar::mouse_down_left2(_xy r)
+{
+	mouse_move_left2(r);
+	return true;
+}
+
+void _e_scrollbar::mouse_move_left2(_xy r)
+{
+	double ii;
+	if ((vid & 1) == 0)
+		ii = (r.x - local_area.x.min) / local_area.x.length();
+	else
+		ii = (r.y - local_area.y.min) / local_area.y.length();
+	if (ii < 0) ii = 0;
+	if (ii > 1) ii = 1;
+	if (ii != position)
+	{
+		position = ii;
+		cha_area();
+		parent->update();
+	}
+}
+
+void _e_scrollbar::ris2(_trans tr)
+{
+	_area a = tr(local_area);
+	uint c = ui->cc1;
+	if ((vid & 1) == 0)
+	{
+		ui->canvas.line({ a.x.min, 0.5 * a.y }, { a.x.max, 0.5 * a.y }, c);
+		ui->canvas.line({ position * a.x, a.y.min }, { position * a.x, a.y.max }, c);
+	}
+	else
+	{
+		ui->canvas.line({ 0.5 * a.x, a.y.min }, { 0.5 * a.x, a.y.max }, c);
+		ui->canvas.line({ a.x.min, position * a.y }, { a.x.max, position * a.y }, c);
+	}
+}
+
+void _e_scrollbar::prilip()
+{
+	if (!parent) return;
+	del_area();
+	double l = ((vid & 1) == 1) ? local_area.x.length() : local_area.y.length();
+	_area& o = parent->local_area;
+	if (vid == 2) local_area = { {o.x.min, o.x.max}, {o.y.max, o.y.max + l} };
+	if (vid == 3) local_area = { {o.x.max, o.x.max + l}, {o.y.min, o.y.max} };
+	if (vid == 4) local_area = { {o.x.min, o.x.max}, {o.y.min - l, o.y.min} };
+	if (vid == 5) local_area = { {o.x.min - l, o.x.min}, {o.y.min, o.y.max} };
+	//	if (vid > 1) trans = _trans(); //глобальная замена trans
+	area.reset();
+	add_area();
+}
+

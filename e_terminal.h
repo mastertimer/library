@@ -41,7 +41,7 @@ struct _e_terminal : public _ui_element
 	void text_clear() { text.clear(); }
 	void start_timer();
 	void stop_timer(std::wstring_view s);
-	void run() override;
+	void update() override;
 	void key_down(ushort key) override;
 	void key_press(ushort key) override;
 	bool mouse_wheel2(_xy r, short value) override;
