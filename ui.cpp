@@ -1,5 +1,7 @@
 ﻿#include "ui.h"
 
+#include "win_basic.h"
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 _ui_element::_ui_element(_ui* ui_): ui(ui_)
@@ -271,11 +273,16 @@ void _ui::mouse_button_left_up()
 void _ui::mouse_button_right_down()
 {
 	n_s_right = true;
+	if (n_perenos) return;
+	if (n_s_left) return; // правая при зажатой левой
+	set_cursor(_cursor::hand_point);
+	mouse_move();
 }
 
 void _ui::mouse_button_right_up()
 {
 	n_s_right = false;
+	if (n_perenos) return;
 }
 
 void _ui::mouse_button_middle_down()
