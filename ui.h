@@ -4,6 +4,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <functional>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -13,6 +14,10 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 {
 	_area local_area;
 	_trans trans;
+	std::set<std::shared_ptr<_ui_element>> subelements;
+	std::shared_ptr<_ui_element> parent;
+	_color c{ 0xFF208040 };
+	_color c2{ 0 };
 
 	_ui_element(_ui* ui_);
 	virtual ~_ui_element();
@@ -42,11 +47,7 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 protected:
 	_ui* ui;
 	bool key_fokus = false;
-	_color c{ 0xFF208040 };
-	_color c2{ 0 };
-	std::shared_ptr<_ui_element> parent;
 	std::optional<_area> area;
-	std::set<std::shared_ptr<_ui_element>> subelements;
 
 	virtual void ris2(_trans tr);
 };
@@ -56,20 +57,47 @@ protected:
 struct _e_scrollbar : public _ui_element
 {
 	double position = 0; // положение стрелки [0-1]
-	char   vid = 0; // 0 - горизонтальный 1 - вертикальный 2 - снизу 3 - справа 4 - сверху 5 - слева
+	char vid = 0; // 0 - горизонтальный 1 - вертикальный 2 - снизу 3 - справа 4 - сверху 5 - слева
 
 	_e_scrollbar(_ui* ui_);
 	~_e_scrollbar();
-
 	bool mouse_down_left2(_xy r) override;
 	void mouse_move_left2(_xy r) override;
 	void ris2(_trans tr) override;
-
 	void prilip(); // прилипание к графическому объекту
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+struct _e_button : public _ui_element
+{
+	bool checkbox = false;
+	bool checked = false;
+	std::wstring hint;
+	_picture picture;
+	std::function<void()> run;
+
+	_e_button(_ui* ui_);
+	void mouse_up_left2(_xy r);
+	void ris2(_trans tr) override;
+	bool mouse_move2(_xy r) override;
+	void mouse_finish_move() override;
+	bool mouse_down_left2(_xy r) override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct _e_text : public _ui_element
+{
+	std::wstring s = L"";
+
+	_e_text(_ui* ui_);
+	bool mouse_move2(_xy r) override;
+	void ris2(_trans tr) override;
+	void update() override;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct _ui
 {
@@ -80,6 +108,7 @@ struct _ui
 	std::shared_ptr<_ui_element> n_act_key;
 	std::shared_ptr<_ui_element> n_tani;
 	std::shared_ptr<_ui_element> n_go_move;
+	std::shared_ptr<_ui_element> n_hint;
 	std::set<std::shared_ptr<_ui_element>> n_timer1000;
 	bool n_s_ctrl = false;
 	bool n_s_shift = false;
@@ -115,8 +144,9 @@ struct _ui
 	void mouse_button_middle_down();
 	void mouse_button_middle_up();
 	void mouse_wheel_turn(short value);
-
-private:
+	void add_hint(std::wstring_view hint, std::shared_ptr<_ui_element> g);
+	void del_hint();
+	void erase(std::shared_ptr<_ui_element> e);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

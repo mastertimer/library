@@ -346,6 +346,46 @@ void _ui::mouse_wheel_turn(short value)
 	n_ko->mouse_wheel_turn(n_ko->trans, value);
 }
 
+void _ui::add_hint(std::wstring_view hint, std::shared_ptr<_ui_element> g)
+{
+	del_hint();
+	if (hint.empty()) return;
+	_trans tr = master_trans_go;
+	_isize siz = canvas.size_text(hint, 13);
+	tr.offset += _xy{ -siz.x * 0.5, -15.0 } + _xy{ 0.5 * g->local_area.x, g->local_area.y.min } *tr.scale;
+	tr.scale = 1;
+	auto go = std::make_shared<_e_text>(this);
+	go->c =cc3;
+	go->c2 = cc0;
+	go->trans = n_ko->trans.inverse() * tr;
+	go->s = hint;
+	go->update();
+	n_ko->add_child(go);
+	n_hint = go;
+}
+
+void _ui::del_hint()
+{
+	erase(n_hint);
+}
+
+void _ui::erase(std::shared_ptr<_ui_element> e)
+{
+	if (!e) return;
+	while (!e->subelements.empty()) erase(*e->subelements.begin());
+	if (e->parent)
+	{
+		e->parent->subelements.erase(e);
+		e->parent.reset();
+	}
+	n_timer1000.erase(e);
+	if (n_ko == e) n_ko.reset();
+	if (n_act_key == e) n_act_key.reset();
+	if (n_tani == e) n_tani.reset();
+	if (n_go_move == e) n_go_move.reset();
+	if (n_hint == e) n_hint.reset();
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 _e_scrollbar::_e_scrollbar(_ui* ui_) : _ui_element(ui_)
@@ -412,3 +452,85 @@ void _e_scrollbar::prilip()
 	add_area();
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void _e_button::mouse_up_left2(_xy r)
+{
+	cha_area();
+}
+
+_e_button::_e_button(_ui* ui_) : _ui_element(ui_)
+{
+	local_area = { {0, 26}, {0, 26} };
+}
+
+void _e_button::ris2(_trans tr)
+{
+	_area oo = tr(local_area);
+	uint c = 0;
+	if (picture.size.x * picture.size.y > 0)
+	{
+		i64 rx2 = (i64)(picture.size.x * tr.scale + 0.5);
+		i64 ry2 = (i64)(picture.size.y * tr.scale + 0.5);
+		_ixy ce = oo.center();
+		ui->canvas.stretch_draw(&picture, ce.x - rx2 / 2, ce.y - ry2 / 2, tr.scale);
+	}
+	else
+		c = ui->cc1;
+	if (checked) c = ui->cc1 - 0x40000000;
+	if (ui->n_go_move.get() == this) c = ui->cc1 - 0x80000000;
+	if (ui->n_tani.get() == this) c = ui->cc2 - 0x80000000;
+	ui->canvas.fill_rectangle(_iarea{ {(i64)oo.x.min, (i64)oo.x.max + 1}, {(i64)oo.y.min, (i64)oo.y.max + 1} }, { c });
+}
+
+bool _e_button::mouse_move2(_xy r)
+{
+	if (ui->n_go_move.get() != this) // первое перемещение
+	{
+		cha_area();
+	}
+	if (!ui->n_hint) ui->add_hint(hint, shared_from_this()); // нет подсказки
+	return true;
+}
+
+void _e_button::mouse_finish_move()
+{
+	cha_area();
+	ui->del_hint();
+}
+
+bool _e_button::mouse_down_left2(_xy r)
+{
+	if (checkbox) checked = !checked;
+	run();
+	cha_area();
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+_e_text::_e_text(_ui* ui_) : _ui_element(ui_)
+{
+	local_area = { {0, 13}, {0, 13} };
+}
+
+bool _e_text::mouse_move2(_xy r)
+{
+	return false;
+}
+
+void _e_text::ris2(_trans tr)
+{
+	int sf = (int)(13 * tr.scale + 0.5);
+	if (sf < 5) return;
+	ui->canvas.text(tr.offset, s.c_str(), sf, c, c2);
+}
+
+void _e_text::update()
+{
+	del_area();
+	_isize size = ui->canvas.size_text(s, 13);
+	local_area = { {-1, std::max((double)size.x, 13.0)}, {0, std::max((double)size.y, 13.0)} };
+	area.reset();
+	add_area();
+}
