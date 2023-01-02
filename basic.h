@@ -64,6 +64,7 @@ std::string  double_to_string(double a, int z);
 const wchar_t* uint64_to_wstr_hex(u64 a);
 
 std::wstring substr(std::wstring_view s, i64 n, i64 k); // подстрока которая не кидает исключения
+std::string date_to_ansi_string(time_t time);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

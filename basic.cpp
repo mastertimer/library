@@ -12,6 +12,15 @@ namespace
 
 }
 
+std::string date_to_ansi_string(time_t time)
+{ // *
+	tm a;
+	localtime_s(&a, &time);
+	char s[9];
+	strftime(s, sizeof(s), "%d.%m.%g", &a);
+	return s;
+}
+
 uchar position1_64(u64 a)
 { // **
 	if (a >> 32)

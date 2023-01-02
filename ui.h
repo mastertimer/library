@@ -43,6 +43,7 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	virtual bool mouse_move2(_xy r); // перемещение мышки действие
 	virtual void mouse_finish_move(); // мышка ушла
 	virtual bool test_local_area(_xy b); // лежит ли точка внутри
+	template <typename _t> std::shared_ptr<_t> find1(); // найти указатель нужного типа на глубине 1
 
 protected:
 	_ui* ui;
@@ -148,5 +149,18 @@ struct _ui
 	void del_hint();
 	void erase(std::shared_ptr<_ui_element> e);
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename _t> std::shared_ptr<_t> _ui_element::find1()
+{
+	for (auto element : subelements)
+	{
+		auto tel = std::dynamic_pointer_cast<_t>(element);
+		if (tel) return tel;
+	}
+	return nullptr;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
