@@ -84,6 +84,7 @@ void _ui_element::add_child(std::shared_ptr<_ui_element> element)
 {
 	subelements.insert(element);
 	element->parent = shared_from_this();
+	element->add_area();
 }
 
 bool _ui_element::test_local_area(_xy b)
@@ -375,6 +376,7 @@ void _ui::erase(std::shared_ptr<_ui_element> e)
 	while (!e->subelements.empty()) erase(*e->subelements.begin());
 	if (e->parent)
 	{
+		e->del_area();
 		e->parent->subelements.erase(e);
 		e->parent.reset();
 	}
@@ -485,10 +487,7 @@ void _e_button::ris2(_trans tr)
 
 bool _e_button::mouse_move2(_xy r)
 {
-	if (ui->n_go_move.get() != this) // первое перемещение
-	{
-		cha_area();
-	}
+	if (ui->n_go_move.get() != this) cha_area(); // первое перемещение
 	if (!ui->n_hint) ui->add_hint(hint, shared_from_this()); // нет подсказки
 	return true;
 }
