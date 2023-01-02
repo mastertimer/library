@@ -68,6 +68,7 @@ struct _picture
 
 	bool save_to_file(const std::filesystem::path& file_name);
 	bool load_from_file(const std::filesystem::path& file_name);
+	bool set_from_text(std::string_view s, uint c00, uint cc1);
 
 	_color* scan_line(i64 y) const { return &data2[y * size.x]; }
 

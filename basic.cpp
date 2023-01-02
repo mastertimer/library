@@ -12,6 +12,15 @@ namespace
 
 }
 
+bool string_to_mem(std::string_view s, void* d, i64 size)
+{
+	if (s.size() != size * 2ULL) return false;
+	unsigned char* dd = (unsigned char*)d;
+	for (u64 i = 0; i < s.size(); i += 2)
+		*dd++ = (hex_to_byte[(uchar)s[i]] << 4) + hex_to_byte[(uchar)s[i + 1]];
+	return true;
+}
+
 std::string date_to_ansi_string(time_t time)
 { // *
 	tm a;

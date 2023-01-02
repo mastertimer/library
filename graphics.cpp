@@ -125,6 +125,19 @@ struct _color_mixing
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+bool _picture::set_from_text(std::string_view s, uint c00, uint cc1)
+{
+	if (s.size() != 144) return false; // сжатие кнопок 24x24 (cc1, c00) в будущем сдалать универсальное сжатие картинок
+	resize({ 24, 24 });
+	clear({ c00 });
+	uchar a[72];
+	if (!string_to_mem(s, a, 72)) return false;
+	for (i64 i = 0; i < 576; i++)
+		if (a[i >> 3] & (1 << (i & 7)))
+			data[i] = cc1;
+	return true;
+}
+
 bool _picture::load_from_file(const std::filesystem::path& file_name)
 {
 	_stack mem;

@@ -118,16 +118,6 @@ std::string wstring_to_string(std::wstring_view b)
 	return res.str();
 }
 
-constexpr uint hex_to_byte[256] = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
-	0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
 const wchar_t* string_to_wstring2(std::string_view s)
 {
 	static const wchar_t conv[256] = {
@@ -467,15 +457,6 @@ _trans _rjson::read_trans(std::string_view name)
 	return res;
 }
 
-bool string_to_mem(std::string_view s, void* d, i64 size)
-{
-	if (s.size() != size * 2ULL) return false;
-	unsigned char* dd = (unsigned char*)d;
-	for (u64 i = 0; i < s.size(); i += 2)
-		*dd++ = (hex_to_byte[(uchar)s[i]] << 4) + hex_to_byte[(uchar)s[i + 1]];
-	return true;
-}
-
 void _rjson::read(std::string_view name, _multi_string& b)
 {
 	b.line.clear();
@@ -504,17 +485,7 @@ void _rjson::read(std::string_view name, _picture& b, uint c00, uint cc1)
 	if (temp.size() == 1)
 		if (temp[0].size() == 144) // сжатие кнопок 24x24 (cc1, c00) в будущем сдалать универсальное сжатие картинок
 		{
-			b.resize({ 24, 24 });
-			b.clear({ c00 });
-			uchar a[72];
-			if (!string_to_mem(temp[0], a, 72))
-			{
-				error = 12;
-				return;
-			}
-			for (i64 i = 0; i < 576; i++)
-				if (a[i >> 3] & (1 << (i & 7)))
-					b.data[i] = cc1;
+			if (!b.set_from_text(temp[0], c00, cc1)) error = 12;
 			return;
 		}
 	int rx = (int)(temp[0].size() / 8);
