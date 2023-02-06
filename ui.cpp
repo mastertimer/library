@@ -501,7 +501,7 @@ void _e_button::mouse_finish_move()
 bool _e_button::mouse_down_left2(_xy r)
 {
 	if (checkbox) checked = !checked;
-	run();
+	if (run) run();
 	cha_area();
 	return true;
 }
