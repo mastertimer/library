@@ -77,6 +77,8 @@ std::wstring substr(std::wstring_view s, i64 n, i64 k); // подстрока к
 std::string date_to_ansi_string(time_t time);
 bool string_to_mem(std::string_view s, void* d, i64 size);
 
+// шаг переменной на графической оси (для графиков функций)
+void os_pordis(double min, double max, i64 maxN, double& mi, double& step, double min_step = 0.0);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
