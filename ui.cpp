@@ -320,6 +320,25 @@ void _ui::mouse_button_middle_up()
 	set_cursor((n_perenos) ? _cursor::size_all : _cursor::normal);
 }
 
+void _ui::mouse_button_left_dblclk()
+{
+
+}
+
+void _ui::mouse_button_right_dblclk()
+{
+
+}
+
+void _ui::mouse_button_middle_dblclk()
+{
+	_xy tr = mouse_xy;
+	n_ko->cha_area(n_ko->calc_area());
+	n_ko->trans.scale_up(tr, 1 / n_ko->trans.scale);
+	n_ko->trans.scale = 1;
+	n_ko->cha_area(n_ko->calc_area());
+}
+
 void _ui::mouse_wheel_turn(short value)
 {
 	if (n_perenos)

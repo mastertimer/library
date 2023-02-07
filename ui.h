@@ -115,7 +115,6 @@ struct _ui
 	bool n_s_left = false;
 	bool n_s_right = false;
 	bool n_s_middle = false;
-	bool n_s_double = false;
 	bool n_perenos = false;
 	_xy mouse_xy{ 0, 0 };
 	_xy mouse_xy_pr{ 0, 0 };
@@ -139,10 +138,13 @@ struct _ui
 	void mouse_move();
 	void mouse_button_left_down();
 	void mouse_button_left_up();
+	void mouse_button_left_dblclk();
 	void mouse_button_right_down();
 	void mouse_button_right_up();
+	void mouse_button_right_dblclk();
 	void mouse_button_middle_down();
 	void mouse_button_middle_up();
+	void mouse_button_middle_dblclk();
 	void mouse_wheel_turn(short value);
 	void add_hint(std::wstring_view hint, std::shared_ptr<_ui_element> g);
 	void del_hint();
