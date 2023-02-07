@@ -181,10 +181,6 @@ bool _ui_element::mouse_down_left(_trans tr)
 	return false;
 }
 
-void _ui_element::mouse_up_middle()
-{
-}
-
 void _ui_element::add_area(std::optional<_area> a)
 {
 	if (!a)
@@ -305,28 +301,23 @@ void _ui::mouse_button_left_up()
 void _ui::mouse_button_right_down()
 {
 	n_s_right = true;
-	if (n_perenos) return;
-	if (n_s_left) return; // правая при зажатой левой
-	set_cursor(_cursor::hand_point);
-	mouse_move();
 }
 
 void _ui::mouse_button_right_up()
 {
 	n_s_right = false;
-	if (n_perenos) return;
 }
 
 void _ui::mouse_button_middle_down()
 {
 	n_s_middle = true;
-	mouse_move();
 }
 
 void _ui::mouse_button_middle_up()
 {
 	n_s_middle = false;
-	if (n_go_move) n_go_move->mouse_up_middle();
+	n_perenos = !n_perenos;
+	set_cursor((n_perenos) ? _cursor::size_all : _cursor::normal);
 }
 
 void _ui::mouse_wheel_turn(short value)

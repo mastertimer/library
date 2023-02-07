@@ -39,7 +39,6 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	bool mouse_down_left(_trans tr); // щелчок мышки
 	bool mouse_move(_trans tr); // перемещение мышки
 	bool mouse_wheel_turn(_trans tr, short value); // поворот колеса мышки
-	void mouse_up_middle(); // отпущено колесо мышки
 	virtual bool mouse_move2(_xy r); // перемещение мышки действие
 	virtual void mouse_finish_move(); // мышка ушла
 	virtual bool test_local_area(_xy b); // лежит ли точка внутри
