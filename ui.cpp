@@ -282,7 +282,7 @@ void _ui::mouse_move()
 		}
 }
 
-void _ui::mouse_button_left_down()
+void _ui::mouse_button_left_down(bool dblclk)
 {
 	n_s_left = true;
 	mouse_xy_pr = mouse_xy;
@@ -298,7 +298,7 @@ void _ui::mouse_button_left_up()
 	n_tani = nullptr;
 }
 
-void _ui::mouse_button_right_down()
+void _ui::mouse_button_right_down(bool dblclk)
 {
 	n_s_right = true;
 }
@@ -308,9 +308,17 @@ void _ui::mouse_button_right_up()
 	n_s_right = false;
 }
 
-void _ui::mouse_button_middle_down()
+void _ui::mouse_button_middle_down(bool dblclk)
 {
 	n_s_middle = true;
+	if (dblclk)
+	{
+		_xy tr = mouse_xy;
+		n_ko->cha_area(n_ko->calc_area());
+		n_ko->trans.scale_up(tr, 1 / n_ko->trans.scale);
+		n_ko->trans.scale = 1;
+		n_ko->cha_area(n_ko->calc_area());
+	}
 }
 
 void _ui::mouse_button_middle_up()
@@ -318,25 +326,6 @@ void _ui::mouse_button_middle_up()
 	n_s_middle = false;
 	n_perenos = !n_perenos;
 	set_cursor((n_perenos) ? _cursor::size_all : _cursor::normal);
-}
-
-void _ui::mouse_button_left_dblclk()
-{
-
-}
-
-void _ui::mouse_button_right_dblclk()
-{
-
-}
-
-void _ui::mouse_button_middle_dblclk()
-{
-	_xy tr = mouse_xy;
-	n_ko->cha_area(n_ko->calc_area());
-	n_ko->trans.scale_up(tr, 1 / n_ko->trans.scale);
-	n_ko->trans.scale = 1;
-	n_ko->cha_area(n_ko->calc_area());
 }
 
 void _ui::mouse_wheel_turn(short value)

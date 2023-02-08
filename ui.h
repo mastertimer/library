@@ -146,15 +146,12 @@ struct _ui
 	void key_down(ushort key);
 	void key_press(ushort key);
 	void mouse_move();
-	void mouse_button_left_down();
+	void mouse_button_left_down(bool dblclk = false);
 	void mouse_button_left_up();
-	void mouse_button_left_dblclk();
-	void mouse_button_right_down();
+	void mouse_button_right_down(bool dblclk = false);
 	void mouse_button_right_up();
-	void mouse_button_right_dblclk();
-	void mouse_button_middle_down();
+	void mouse_button_middle_down(bool dblclk = false);
 	void mouse_button_middle_up();
-	void mouse_button_middle_dblclk();
 	void mouse_wheel_turn(short value);
 	void add_hint(std::wstring_view hint, std::shared_ptr<_ui_element> g);
 	void del_hint();
