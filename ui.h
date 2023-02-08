@@ -18,6 +18,7 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	std::shared_ptr<_ui_element> parent;
 	_color c{ 0xFF208040 };
 	_color c2{ 0 };
+	_ui* ui;
 
 	_ui_element(_ui* ui_);
 	virtual ~_ui_element();
@@ -45,11 +46,20 @@ struct _ui_element : public std::enable_shared_from_this<_ui_element>
 	template <typename _t> std::shared_ptr<_t> find1(); // найти указатель нужного типа на глубине 1
 
 protected:
-	_ui* ui;
 	bool key_fokus = false;
 	std::optional<_area> area;
 
 	virtual void ris2(_trans tr);
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct _e_function : public _ui_element
+{
+	std::function<void()> run;
+
+	_e_function(_ui* ui_, std::function<void()> run_);
+	void update() override;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +85,7 @@ struct _e_button : public _ui_element
 	bool checked = false;
 	std::wstring hint;
 	_picture picture;
-	std::function<void()> run;
+	std::function<void(_e_button&)> run;
 
 	_e_button(_ui* ui_);
 	void mouse_up_left2(_xy r);

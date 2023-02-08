@@ -400,6 +400,18 @@ void _ui::erase(std::shared_ptr<_ui_element> e)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+_e_function::_e_function(_ui* ui_, std::function<void()> run_) : _ui_element(ui_), run(run_)
+{
+
+}
+
+void _e_function::update()
+{
+	if (run) run();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 _e_scrollbar::_e_scrollbar(_ui* ui_) : _ui_element(ui_)
 {
 	local_area = { {0, 10}, {0, 10} };
@@ -511,7 +523,7 @@ void _e_button::mouse_finish_move()
 bool _e_button::mouse_down_left2(_xy r)
 {
 	if (checkbox) checked = !checked;
-	if (run) run();
+	if (run) run(*this);
 	cha_area();
 	return true;
 }
