@@ -1,6 +1,26 @@
 ﻿#include "e_terminal.h"
 
 #include "win_basic.h"
+#include "exchange_research.h"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void trm_test(_e_terminal& trm, const std::vector<std::wstring>& parameters)
+{
+	trm.start_timer();
+	trm.stop_timer(std::to_wstring(8));
+	trm.print(L"====");
+}
+
+void trm_clear(_e_terminal& trm, const std::vector<std::wstring>& parameters)
+{
+	trm.text_clear();
+}
+
+void trm_help(_e_terminal& trm, const std::vector<std::wstring>& parameters)
+{
+	for (auto& i : trm.command) trm.print(i.first + L" - " + i.second.caption);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -9,13 +29,13 @@ _e_terminal::_e_terminal(_ui* ui_) : _ui_element(ui_)
 	local_area = { {0, 100}, {0, 100} };
 	key_fokus = true;
 
-	//command.insert({ L"clear", { L"очищение экрана", trm_clear } });
-	//command.insert({ L"help", { L"вывод справки", trm_help } });
-	//command.insert({ L"test", { L"тестирование разное", trm_test } });
-	//command.insert({ L"1", { L"статистика цен", exchange_fun1 } });
-	//command.insert({ L"2", { L"тестирование фильтра", test_filter } });
-	//command.insert({ L"sad", { L"спрос и предложение", exchange_fun2 } });
-	//command.insert({ L"delta", { L"разность цен", exchange_fun3 } });
+	command.insert({ L"clear", { L"очищение экрана", trm_clear } });
+	command.insert({ L"help", { L"вывод справки", trm_help } });
+	command.insert({ L"test", { L"тестирование разное", trm_test } });
+	command.insert({ L"1", { L"статистика цен", exchange__fun1 } });
+	command.insert({ L"2", { L"тестирование фильтра", test__filter } });
+	command.insert({ L"sad", { L"спрос и предложение", exchange__fun2 } });
+	command.insert({ L"delta", { L"разность цен", exchange__fun3 } });
 }
 
 void _e_terminal::ris2(_trans tr)
