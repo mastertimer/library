@@ -237,6 +237,11 @@ void _ui::run_timer1000()
 	for (auto element : n_timer1000) element->update();
 }
 
+void _ui::run_timer250()
+{
+	for (auto element : n_timer250) element->update();
+}
+
 void _ui::key_down(ushort key)
 {
 	if (!n_act_key) return;
@@ -380,6 +385,7 @@ void _ui::erase(std::shared_ptr<_ui_element> e)
 		e->parent.reset();
 	}
 	n_timer1000.erase(e);
+	n_timer250.erase(e);
 	if (n_ko == e) n_ko.reset();
 	if (n_act_key == e) n_act_key.reset();
 	if (n_tani == e) n_tani.reset();

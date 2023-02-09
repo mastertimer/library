@@ -58,7 +58,7 @@ struct _e_function : public _ui_element
 {
 	std::function<void()> run;
 
-	_e_function(_ui* ui_, std::function<void()> run_);
+	_e_function(_ui* ui_, std::function<void()> run_ = nullptr);
 	void update() override;
 };
 
@@ -120,6 +120,7 @@ struct _ui
 	std::shared_ptr<_ui_element> n_go_move;
 	std::shared_ptr<_ui_element> n_hint;
 	std::set<std::shared_ptr<_ui_element>> n_timer1000;
+	std::set<std::shared_ptr<_ui_element>> n_timer250;
 	bool n_s_ctrl = false;
 	bool n_s_shift = false;
 	bool n_s_left = false;
@@ -143,6 +144,7 @@ struct _ui
 	void add_changed_area(_area a);
 	void draw(_isize r);
 	void run_timer1000();
+	void run_timer250();
 	void key_down(ushort key);
 	void key_press(ushort key);
 	void mouse_move();
