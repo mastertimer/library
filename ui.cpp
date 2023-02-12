@@ -211,6 +211,16 @@ void _ui_element::del_area(std::optional<_area> a)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void _ui::paint(HWND hwnd)
+{
+	HDC hdc = GetDC(hwnd);
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	draw({ rect.right, rect.bottom });
+	BitBlt(hdc, 0, 0, rect.right, rect.bottom, canvas.hdc, 0, 0, SRCCOPY);
+	ReleaseDC(hwnd, hdc);
+}
+
 _ui::_ui()
 {
 	n_ko = std::make_shared<_ui_element>(this);

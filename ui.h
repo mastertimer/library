@@ -141,6 +141,7 @@ struct _ui
 	const _color cc4{ 0xFF104020 }; // цвет 4
 
 	_ui();
+	void paint(HWND hwnd);
 	void add_changed_area(_area a);
 	void draw(_isize r);
 	void run_timer1000();
