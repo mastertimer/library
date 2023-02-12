@@ -60,7 +60,7 @@ std::filesystem::path get_exe_path(HINSTANCE hinstance)
 	return fn;
 }
 
-int run_windows_app(HINSTANCE hinstance, WNDPROC wnd_proc, int n_cmd_show)
+int run_windows_app(std::wstring_view window_name, HINSTANCE hinstance, WNDPROC wnd_proc, int n_cmd_show)
 {
 	static TCHAR szWindowClass[] = L"win64app";
 	WNDCLASSEX wcex;
@@ -77,8 +77,8 @@ int run_windows_app(HINSTANCE hinstance, WNDPROC wnd_proc, int n_cmd_show)
 	wcex.lpszClassName = szWindowClass;
 	wcex.hIconSm = 0;
 	if (!RegisterClassEx(&wcex)) return 2;
-	h_wnd = CreateWindow(szWindowClass, L"piano", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1600, 800,
-		NULL, NULL, hinstance, NULL);
+	h_wnd = CreateWindow(szWindowClass, window_name.data(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+		1600, 800, NULL, NULL, hinstance, NULL);
 	if (!h_wnd) return 3;
 	ShowWindow(h_wnd, n_cmd_show);
 	UpdateWindow(h_wnd);

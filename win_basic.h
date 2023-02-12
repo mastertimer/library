@@ -23,6 +23,6 @@ inline _cursor g_cursor = _cursor::normal; // установленный кур�
 inline HWND h_wnd = nullptr;
 
 void set_cursor(_cursor x);
-int run_windows_app(HINSTANCE hinstance, WNDPROC wnd_proc, int n_cmd_show);
+int run_windows_app(std::wstring_view window_name, HINSTANCE hinstance, WNDPROC wnd_proc, int n_cmd_show);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
