@@ -4,6 +4,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void set_cursor(_cursor x)
+{
+	if (x == g_cursor) return;
+	g_cursor = x;
+	SetCursor(cursors[u64(x)]);
+}
+
 void set_clipboard_text(std::wstring_view text)
 {
 	if (OpenClipboard(0))//открываем буфер обмена
