@@ -494,7 +494,7 @@ t_t void _picture_functions::line5(_ixy p1, _ixy p2, _color c)
 	(abs(p1.x - p2.x) >= abs(p1.y - p2.y)) ? line5_x<_t>(p1, p2, c) : line5_y<_t>(p1, p2, c);
 }
 
-void _picture::line4(_ixy p1, _ixy p2, _color c, bool rep)
+void _picture::line(_ixy p1, _ixy p2, _color c, bool rep)
 {
 	if (c.a == 0 && !rep) return;
 	if (rep || c.a == 0xff)
@@ -506,142 +506,6 @@ void _picture::line4(_ixy p1, _ixy p2, _color c, bool rep)
 		((_picture_functions*)this)->line5<_color_mixing>(p1, p2, c);
 	else
 		((_picture_functions*)this)->line5<_color_overlay>(p1, p2, c);
-}
-
-void _picture::line(_ixy p1, _ixy p2, uint c, bool rep)
-{
-	uint kk = 255 - (c >> 24);
-	if ((kk == 0xFF) && (!rep)) return; // полностью прозрачная
-	if (kk == 0) rep = true;
-	if (p1.y == p2.y) // горизонтальная линия
-	{
-		if (p1.x > p2.x) std::swap(p1.x, p2.x);
-		if (p1.x < drawing_area.x.min) p1.x = drawing_area.x.min;
-		if (p2.x >= drawing_area.x.max) p2.x = drawing_area.x.max - 1;
-		if ((p1.x > p2.x) || (p1.y < drawing_area.y.min) || (p1.y >= drawing_area.y.max)) return; // за пределы
-		if (rep)
-		{
-			u64  cc = (((u64)c) << 32) + c;
-			u64* ee = (u64*)&(data[p1.y * size.x + p1.x]);
-			u64* eemax = (u64*)&(data[p1.y * size.x + p2.x]);
-			while (ee < eemax) *ee++ = cc;
-			if (ee == eemax) *((uint*)ee) = c;
-			return;
-		}
-		uint   k2 = 256 - kk;
-		uint   d1 = (c & 255) * k2;
-		uint   d2 = ((c >> 8) & 255) * k2;
-		uint   d3 = ((c >> 16) & 255) * k2;
-		uchar* c2 = (uchar*)&(data[p1.y * size.x + p1.x]);
-		for (i64 d = p1.x - p2.x; d <= 0; d++)
-		{
-			c2[0] = (c2[0] * kk + d1) >> 8;
-			c2[1] = (c2[1] * kk + d2) >> 8;
-			c2[2] = (c2[2] * kk + d3) >> 8;
-			c2 += 4;
-		}
-		return;
-	}
-	if (p1.x == p2.x) // вертикальная линия
-	{
-		if (p1.y > p2.y) std::swap(p1.y, p2.y);
-		if (p1.y < drawing_area.y.min) p1.y = drawing_area.y.min;
-		if (p2.y >= drawing_area.y.max) p2.y = drawing_area.y.max - 1;
-		if ((p1.y > p2.y) || (p1.x < drawing_area.x.min) || (p1.x >= drawing_area.x.max)) return; // за пределы
-		if (rep)
-		{
-			uint* c2 = &data[p1.y * size.x + p1.x];
-			for (i64 y = p1.y - p2.y; y <= 0; y++)
-			{
-				*c2 = c;
-				c2 += size.x;
-			}
-			return;
-		}
-		uint   k2 = 256 - kk;
-		uint   d1 = (c & 255) * k2;
-		uint   d2 = ((c >> 8) & 255) * k2;
-		uint   d3 = ((c >> 16) & 255) * k2;
-		i64    dc2 = size.x * 4;
-		uchar* c2 = (uchar*)&(data[p1.y * size.x + p1.x]);
-		for (i64 y = p1.y - p2.y; y <= 0; y++)
-		{
-			c2[0] = (c2[0] * kk + d1) >> 8;
-			c2[1] = (c2[1] * kk + d2) >> 8;
-			c2[2] = (c2[2] * kk + d3) >> 8;
-			c2 += dc2;
-		}
-		return;
-	}
-	i64 d = (abs(p1.x - p2.x) >= abs(p1.y - p2.y)) ? abs(p1.x - p2.x) : abs(p1.y - p2.y);
-	i64 dx = ((p2.x - p1.x) << 32) / d;
-	i64 dy = ((p2.y - p1.y) << 32) / d;
-	i64 x = ((p1.x * 2 + 1) << 31) - dx; // ?? +1 для отрицательных p1.x, p1.y ??
-	i64 y = ((p1.y * 2 + 1) << 31) - dy;
-	i64 n = 0;
-	i64 k = d;
-	if (p1.x < drawing_area.x.min)
-	{
-		if (dx <= 0) return;
-		n = (i64)((((drawing_area.x.min - 0) << 32) - x) / dx);
-	}
-	else if (p1.x >= drawing_area.x.max)
-	{
-		if (dx >= 0) return;
-		n = (int)((((drawing_area.x.max - 0) << 32) - x) / dx);
-	}
-	if (p2.x < drawing_area.x.min)
-	{
-		if (dx >= 0) return;
-		k = (int)((((drawing_area.x.min - 0) << 32) - x) / dx - 1);
-	}
-	else if (p2.x >= drawing_area.x.max)
-	{
-		if (dx <= 0) return;
-		k = (int)((((drawing_area.x.max - 1) << 32) - x) / dx);
-	}
-	if (p1.y < drawing_area.y.min)
-	{
-		if (dy <= 0) return;
-		int n2 = (int)((((drawing_area.y.min - 0) << 32) - y) / dy);
-		if (n2 > n) n = n2;
-	}
-	else if (p1.y >= drawing_area.y.max)
-	{
-		if (dy >= 0) return;
-		int n2 = (int)((((drawing_area.y.max - 0) << 32) - y) / dy);
-		if (n2 > n) n = n2;
-	}
-	if (p2.y < drawing_area.y.min)
-	{
-		if (dy >= 0) return;
-		int k2 = (int)((((drawing_area.y.min - 0) << 32) - y) / dy - 1);
-		if (k2 < k) k = k2;
-	}
-	else if (p2.y >= drawing_area.y.max)
-	{
-		if (dy <= 0) return;
-		int k2 = (int)((((drawing_area.y.max - 1) << 32) - y) / dy);
-		if (k2 < k) k = k2;
-	}
-	x += dx * n;
-	y += dy * n;
-	if (rep)
-	{
-		for (i64 i = k - n; i >= 0; i--) data[((y += dy) >> 32) * size.x + ((x += dx) >> 32)] = c;
-		return;
-	}
-	uint k2 = 256 - kk;
-	uint d1 = (c & 255) * k2;
-	uint d2 = ((c >> 8) & 255) * k2;
-	uint d3 = ((c >> 16) & 255) * k2;
-	for (i64 i = k - n; i >= 0; i--)
-	{
-		uchar* c2 = (uchar*)&data[((y += dy) >> 32) * size.x + ((x += dx) >> 32)];
-		c2[0] = (c2[0] * kk + d1) >> 8;
-		c2[1] = (c2[1] * kk + d2) >> 8;
-		c2[2] = (c2[2] * kk + d3) >> 8;
-	}
 }
 
 void _picture::lines(_xy p1, _xy p2, double l, uint c)
@@ -1302,7 +1166,7 @@ void _picture::text16(_ixy p, std::string_view st, uint c, uint bg)
 	}
 }
 
-void _picture::rectangle(_iarea oo, uint c)
+void _picture::rectangle(_iarea oo, _color c)
 {
 	if (oo.empty()) return;
 	line({ oo.x.min, oo.y.min }, { oo.x.max - 1, oo.y.min }, c);

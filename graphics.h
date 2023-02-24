@@ -82,8 +82,7 @@ struct _picture
 
 	void draw(_ixy r, const _picture& bm);
 
-	void line4(_ixy p1, _ixy p2, _color c, bool rep = false);
-	void line(_ixy p1, _ixy p2, uint c, bool rep = false);
+	void line(_ixy p1, _ixy p2, _color c, bool rep = false);
 	void lines(_xy p1, _xy p2, double l, uint c); // точная линия заданной толщины
 	void text16(_ixy p, std::string_view st, uint c, uint bg = 0); // простой текст высотой 16
 	void text16n(i64 x, i64 y, std::string_view st, i64 n, uint c, uint bg = 0); // простой текст высотой 16*n
@@ -96,7 +95,7 @@ struct _picture
 	void fill_rectangle(_iarea r, _color c, bool rep = false);
 	void fill_rectangle(_area r, _color c);
 
-	void rectangle(_iarea oo, uint c);
+	void rectangle(_iarea oo, _color c);
 
 	void stretch_draw(_picture* bm, i64 x, i64 y, double m);
 	void stretch_draw_speed(_picture* bm, i64 nXDest, i64 nYDest, double m);
