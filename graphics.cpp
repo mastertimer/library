@@ -176,17 +176,24 @@ bool _picture::load_from_file(const std::filesystem::path& file_name)
 			char a;
 			for (i64 i = 0; i < finish; i++) mem >> a;
 		}
+		transparent = false;
 		return true;
 	}
 	if (biBitCount == 32)
 	{
 		mem.pop_data(data, size.square() * 4);
+		set_transparent();
 		return true;
 	}
 	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+_color* _picture::scan_line(i64 y) const
+{
+	return (y >= 0 && y < size.y) ? &data[y * size.x] : nullptr;
+}
 
 bool _picture::save_to_file(const std::filesystem::path& file_name)
 {
@@ -499,7 +506,7 @@ void _picture::line(_ixy p1, _ixy p2, _color c, bool rep)
 	if (c.a == 0 && !rep) return;
 	if (rep || c.a == 0xff)
 	{
-		set_transparent(c);
+		transparent |= c.a != 0xff;
 		((_picture_functions*)this)->line5<_color_substitution>(p1, p2, c);
 	}
 	else if (transparent)
@@ -856,7 +863,7 @@ void _picture::fill_rectangle(_iarea r, _color c, bool rep)
 	if (r.empty()) return;
 	if (rep || c.a == 0xff)
 	{
-		set_transparent(c);
+		transparent |= c.a != 0xff;
 		((_picture_functions*)this)->fill_rectangle3<_color_substitution>(r, c);
 	}
 	else if (transparent)

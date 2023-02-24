@@ -52,7 +52,7 @@ struct _picture
 	bool load_from_file(const std::filesystem::path& file_name);
 	bool set_from_text(std::string_view s, _color c00, _color cc1);
 
-	_color* scan_line(i64 y) const { return &data[y * size.x]; }
+	_color* scan_line(i64 y) const;
 
 	virtual bool resize(_isize wh);
 	void set_drawing_area(const _iarea& q);
@@ -85,8 +85,6 @@ struct _picture
 	friend struct _picture_functions;
 
 private:
-	void set_transparent(const _color c) { transparent |= c.a != 0xff; } // *
-
 	_color& pixel(const i64 x, const i64 y) { return data[y * size.x + x]; }
 	const _color& pixel(const i64 x, const i64 y) const { return data[y * size.x + x]; }
 };
