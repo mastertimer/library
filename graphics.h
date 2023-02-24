@@ -79,7 +79,7 @@ struct _picture
 	void set_drawing_area(const _iarea& q);
 	void reset_drawing_area();
 
-	void clear(_color c = { 0xFF000000 }); // *
+	void clear(_color c = 0xFF000000); // *
 	void set_transparent(); // * узнать, есть ли прозрачные пиксели
 
 	void draw(_ixy r, const _picture& bm);

@@ -960,7 +960,7 @@ void _picture::text16n(i64 x, i64 y, std::string_view st, i64 n, uint c, uint bg
 	if (n == 1) return text16({ x, y }, st, c, bg);
 	auto text_area = size_text16(st, n).move({ x,y }) & drawing_area;
 	if (text_area.empty()) return;
-	fill_rectangle(text_area, { bg });
+	fill_rectangle(text_area, bg);
 	constexpr int ly = 13;
 	if ((y >= drawing_area.y.max) || (y + ly * n <= drawing_area.y.min)) return;
 	uint kk = 255 - (c >> 24);
@@ -1078,7 +1078,7 @@ void _picture::text16(_ixy p, std::string_view st, uint c, uint bg)
 {
 	auto text_area = size_text16(st).move(p) & drawing_area;
 	if (text_area.empty()) return;
-	fill_rectangle(text_area, { bg });
+	fill_rectangle(text_area, bg);
 	constexpr int ly = 13;
 	uint kk = 255 - (c >> 24);
 	if (kk == 0xFF) return; // полностью прозрачная
