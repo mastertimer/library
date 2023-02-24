@@ -231,20 +231,20 @@ _picture::~_picture()
 _picture::_picture(const _picture& copy) : size(copy.size), transparent(copy.transparent), drawing_area(copy.size)
 {
 	if (size.empty()) return;
-	data2 = new _color[size.square()];
+	data2 = (_color*)(new uint[size.square()]);
 	memcpy(data2, copy.data2, size.square() * 4);
 }
 
 _picture::_picture(_isize r)
 {
 	drawing_area = size = r;
-	if (!size.empty())	data2 = new _color[size.square()];
+	if (!size.empty()) data2 = (_color*)(new uint[size.square()]);
 }
 
 _picture::_picture(_isize r, _color c)
 {
 	drawing_area = size = r;
-	if (!size.empty())	data2 = new _color[size.square()];
+	if (!size.empty())	data2 = (_color*)(new uint[size.square()]);
 	clear(c);
 }
 
@@ -318,7 +318,7 @@ bool _picture::resize(_isize wh)
 	if (size == wh) return false;
 	size = wh;
 	delete[] data2;
-	data2 = (size.empty()) ? nullptr : (new _color[size.square()]);
+	data2 = (size.empty()) ? nullptr : (_color*)(new uint[size.square()]);
 	drawing_area = size;
 	transparent = false;
 	return true;
