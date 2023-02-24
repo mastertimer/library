@@ -15,6 +15,7 @@ union _color
 		uchar b, g, r, a;
 	};
 
+//	void operator=(uint c2) { c = c2; }
 	bool operator==(const _color color) const { return c == color.c; }
 	bool operator!=(const _color color) const { return c != color.c; }
 	operator uint() const { return c; }

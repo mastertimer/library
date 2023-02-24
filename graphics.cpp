@@ -463,11 +463,11 @@ t_t void _picture_functions::line5_y(_ixy p1, _ixy p2, _color c)
 		i64 dy = (i64)((drawing_area.x.max - x) * dy_dx);
 		p1.y += dy;
 		x += dy * dx_dy;
-		while (x >= drawing_area.y.max) { p1.y++; x += dx_dy; }
+		while (x >= drawing_area.x.max) { p1.y++; x += dx_dy; }
 	}
 	if (p2.y < p1.y) return;
 	_t cc(c);
-	if (dy_dx > 0)
+	if (dx_dy > 0)
 		for (i64 y = p1.y; (y <= p2.y) && (x < drawing_area.x.max); y++, x += dx_dy) cc.mix(pixel((i64)x, y));
 	else
 		for (i64 y = p1.y; (y <= p2.y) && (x >= drawing_area.x.min); y++, x += dx_dy) cc.mix(pixel((i64)x, y));

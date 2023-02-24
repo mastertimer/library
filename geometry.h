@@ -140,6 +140,10 @@ struct _iarea
 
 	_iarea operator&( _iarea b) const { b &= *this; return b; }
 
+	_ixy top_left()     const { return { x.min, y.min }; } // верхний левый угол
+	_ixy top_right()    const { return { x.max, y.min }; } // верхний правый угол
+	_ixy bottom_left()  const { return { x.min, y.max }; } // нижний левый угол
+	_ixy bottom_right() const { return { x.max, y.max }; } // нижний правый угол
 	bool empty() const;
 	_isize size() const { if (empty()) return { 0,0 }; return { x.max - x.min, y.max - y.min }; }
 	bool test(_ixy b) const;
