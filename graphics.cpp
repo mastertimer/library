@@ -307,9 +307,9 @@ void _picture::draw(_ixy r, const _picture& bm)
 		_color* c1 = &pixel(b.x.min, y);
 		const _color* c2 = &bm.pixel(b.x.min - r.x, y - r.y);
 		if (transparent)
-			for (i64 x = b.x.min; x < b.x.max; x++, c1++, c2++) c1->mix2(*c2);
+			for (i64 x = b.x.min; x < b.x.max; x++, c1++, c2++) _color_mixing::mix2(*c2, *c1);
 		else
-			for (i64 x = b.x.min; x < b.x.max; x++, c1++, c2++) c1->mix(*c2);
+			for (i64 x = b.x.min; x < b.x.max; x++, c1++, c2++) _color_overlay::mix2(*c2, *c1);
 	}
 }
 
@@ -1208,12 +1208,12 @@ void _picture::fill_rectangle(_area r, _color c)
 		if (a.x.length() == 1) // точка
 		{
 			c.a = uchar(c.a * (r.x.max - r.x.min) * (r.y.max - r.y.min));
-			if (transparent) c2->mix2(c); else c2->mix(c);
+			if (transparent) _color_mixing::mix2(c, *c2); else _color_overlay::mix2(c, *c2);
 			return;
 		}
 
 		c.a = uchar(ca * (r.y.max - r.y.min) * (a.x.min + 1 - r.x.min));
-		if (transparent) c2->mix2(c); else c2->mix(c);
+		if (transparent) _color_mixing::mix2(c, *c2); else _color_overlay::mix2(c, *c2);
 		c2++;
 
 		c.a = uchar(ca * (r.y.max - r.y.min));
@@ -1230,7 +1230,7 @@ void _picture::fill_rectangle(_area r, _color c)
 		}
 
 		c.a = uchar(ca * (r.y.max - r.y.min) * (r.x.max - a.x.max + 1));
-		if (transparent) c2->mix2(c); else c2->mix(c);
+		if (transparent) _color_mixing::mix2(c, *c2); else _color_overlay::mix2(c, *c2);
 
 		return;
 	}
@@ -1239,7 +1239,7 @@ void _picture::fill_rectangle(_area r, _color c)
 		auto c2 = &pixel(a.x.min, a.y.min);
 
 		c.a = uchar(ca * (r.x.max - r.x.min) * (a.y.min + 1 - r.y.min));
-		if (transparent) c2->mix2(c); else c2->mix(c);
+		if (transparent) _color_mixing::mix2(c, *c2); else _color_overlay::mix2(c, *c2);
 		c2 += size.x;
 
 		c.a = uchar(ca * (r.x.max - r.x.min));
@@ -1256,7 +1256,7 @@ void _picture::fill_rectangle(_area r, _color c)
 		}
 
 		c.a = uchar(ca * (r.x.max - r.x.min) * (r.y.max - a.y.max + 1));
-		if (transparent) c2->mix2(c); else c2->mix(c);
+		if (transparent) _color_mixing::mix2(c, *c2); else _color_overlay::mix2(c, *c2);
 
 		return;
 	}
@@ -1269,7 +1269,7 @@ void _picture::fill_rectangle(_area r, _color c)
 		if (y == a.y.max - 1) k2 = r.y.max - a.y.max + 1;
 
 		c.a = uchar(ca * k2 * (a.x.min + 1 - r.x.min));
-		if (transparent) c2->mix2(c); else c2->mix(c);
+		if (transparent) _color_mixing::mix2(c, *c2); else _color_overlay::mix2(c, *c2);
 		c2++;
 
 		c.a = uchar(ca * k2);
@@ -1294,7 +1294,7 @@ void _picture::fill_rectangle(_area r, _color c)
 			}
 		}
 		c.a = uchar(ca * k2 * (r.x.max - a.x.max + 1));
-		if (transparent) c2->mix2(c); else c2->mix(c);
+		if (transparent) _color_mixing::mix2(c, *c2); else _color_overlay::mix2(c, *c2);
 	}
 }
 

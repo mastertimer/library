@@ -17,32 +17,13 @@ union _color
 
 	_color() = default;
 	_color(uint c2) : c(c2) {}
-	void operator=(uint c2) { c = c2; }
-	bool operator==(const _color color) const { return c == color.c; }
-	bool operator!=(const _color color) const { return c != color.c; }
+
 	operator uint() const { return c; }
 
-	void mix(const _color c2)
-	{
-		uint kk = 255 - c2.a;
-		uint k2 = uint(c2.a) + 1;
-		b = (b * kk + c2.b * k2) >> 8;
-		g = (g * kk + c2.g * k2) >> 8;
-		r = (r * kk + c2.r * k2) >> 8;
-	}
+	void operator=(uint c2) { c = c2; }
 
-	void mix2(const _color c2)
-	{
-		uint kk = 255 - c2.a;
-		uint k2 = (uint(c2.a) + 1) * 255;
-		uint kk_ = 255 - a;
-		uint k2_ = (uint(a) + 1) * kk;
-		uint znam = 65535 - kk * kk_;
-		b = (b * k2_ + c2.b * k2) / znam;
-		g = (g * k2_ + c2.g * k2) / znam;
-		r = (r * k2_ + c2.r * k2) / znam;
-		a = 255 - ((kk_ * kk) >> 8);
-	}
+	bool operator==(const _color color) const { return c == color.c; }
+	bool operator!=(const _color color) const { return c != color.c; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
