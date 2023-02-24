@@ -125,11 +125,11 @@ struct _color_mixing
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool _picture::set_from_text(std::string_view s, uint c00, uint cc1)
+bool _picture::set_from_text(std::string_view s, _color c00, _color cc1)
 {
 	if (s.size() != 144) return false; // сжатие кнопок 24x24 (cc1, c00) в будущем сдалать универсальное сжатие картинок
 	resize({ 24, 24 });
-	clear({ c00 });
+	clear(c00);
 	uchar a[72];
 	if (!string_to_mem(s, a, 72)) return false;
 	for (i64 i = 0; i < 576; i++)
@@ -164,7 +164,7 @@ bool _picture::load_from_file(const std::filesystem::path& file_name)
 		for (i64 y = 0; y < biHeigh; y++)
 		{
 			auto yy = (upend) ? biHeigh - 1 - y : y;
-			_color* c = &data2[yy * size.x];
+			_color* c = &data[yy * size.x];
 			for (i64 x = 0; x < biWidth; x++)
 			{
 				ushort a;
@@ -180,7 +180,7 @@ bool _picture::load_from_file(const std::filesystem::path& file_name)
 	}
 	if (biBitCount == 32)
 	{
-		mem.pop_data(data2, size.square() * 4);
+		mem.pop_data(data, size.square() * 4);
 		return true;
 	}
 	return false;
@@ -208,7 +208,7 @@ bool _picture::save_to_file(const std::filesystem::path& file_name)
 	mem << uint(0);      // biYPelsPerMeter
 	mem << uint(0);      // biClrUsed
 	mem << uint(0);      // biClrImportant
-	mem.push_data(data2, size.square() * 4);
+	mem.push_data(data, size.square() * 4);
 
 	return mem.save_to_file(file_name);
 }
@@ -225,33 +225,33 @@ void _picture::reset_drawing_area()
 
 _picture::~_picture()
 {
-	delete[] data2;
+	delete[] data;
 }
 
 _picture::_picture(const _picture& copy) : size(copy.size), transparent(copy.transparent), drawing_area(copy.size)
 {
 	if (size.empty()) return;
-	data2 = (_color*)(new uint[size.square()]);
-	memcpy(data2, copy.data2, size.square() * 4);
+	data = (_color*)(new uint[size.square()]);
+	memcpy(data, copy.data, size.square() * 4);
 }
 
 _picture::_picture(_isize r)
 {
 	drawing_area = size = r;
-	if (!size.empty()) data2 = (_color*)(new uint[size.square()]);
+	if (!size.empty()) data = (_color*)(new uint[size.square()]);
 }
 
 _picture::_picture(_isize r, _color c)
 {
 	drawing_area = size = r;
-	if (!size.empty())	data2 = (_color*)(new uint[size.square()]);
+	if (!size.empty())	data = (_color*)(new uint[size.square()]);
 	clear(c);
 }
 
-_picture::_picture(_picture&& move) noexcept : data2(move.data2), size(move.size), transparent(move.transparent),
+_picture::_picture(_picture&& move) noexcept : data(move.data), size(move.size), transparent(move.transparent),
 drawing_area(move.drawing_area)
 {
-	move.data2 = nullptr;
+	move.data = nullptr;
 	move.drawing_area = move.size = { 0,0 };
 }
 
@@ -259,7 +259,7 @@ bool _picture::operator==(const _picture& pic) const
 {
 	if (size != pic.size) return false;
 	auto r = size.square();
-	for (auto i = 0; i < r; i++) if (data2[i].c != pic.data2[i].c) return false;
+	for (auto i = 0; i < r; i++) if (data[i].c != pic.data[i].c) return false;
 	return true;
 }
 
@@ -268,19 +268,19 @@ _picture& _picture::operator=(const _picture& copy)
 	if (&copy == this) return *this;
 	resize(copy.size);
 	transparent = copy.transparent;
-	memcpy(data2, copy.data2, size.square() * 4);
+	memcpy(data, copy.data, size.square() * 4);
 	return *this;
 }
 
 _picture& _picture::operator=(_picture&& move) noexcept
 {
 	if (&move == this) return *this;
-	delete[] data2;
-	data2 = move.data2;
+	delete[] data;
+	data = move.data;
 	size = move.size;
 	transparent = move.transparent;
 	drawing_area = move.drawing_area;
-	move.data2 = nullptr;
+	move.data = nullptr;
 	move.drawing_area = move.size = { 0,0 };
 	return *this;
 }
@@ -288,7 +288,7 @@ _picture& _picture::operator=(_picture&& move) noexcept
 void _picture::set_transparent()
 { // *
 	i64 r = size.square();
-	for (i64 i = 0; i < r; i++) if (data2[i].a != 0xff) { transparent = true; return; }
+	for (i64 i = 0; i < r; i++) if (data[i].a != 0xff) { transparent = true; return; }
 	transparent = false;
 }
 
@@ -317,8 +317,8 @@ bool _picture::resize(_isize wh)
 {
 	if (size == wh) return false;
 	size = wh;
-	delete[] data2;
-	data2 = (size.empty()) ? nullptr : (_color*)(new uint[size.square()]);
+	delete[] data;
+	data = (size.empty()) ? nullptr : (_color*)(new uint[size.square()]);
 	drawing_area = size;
 	transparent = false;
 	return true;
@@ -331,7 +331,7 @@ void _picture::clear(_color c)
 	else
 	{
 		transparent = c.a != 0xff;
-		memset32((uint*)data2, c.c, size.square());
+		memset32((uint*)data, c.c, size.square());
 	}
 }
 
@@ -626,7 +626,7 @@ void _picture::stretch_draw_speed(_picture* bm, i64 nXDest, i64 nYDest, double m
 	for (i64 j = 0; j < nHeight; j++)
 	{
 		uchar* s1 = (uchar*)(data + ((nYDest + j) * size.x + nXDest));
-		uint* ss2 = (bm->data + (i64)(((nYSrc + j) * mm)) * bm->size.x);
+		uint* ss2 = (uint*)(bm->data + (i64)(((nYSrc + j) * mm)) * bm->size.x);
 		for (i64 i = 0; i < nWidth; i++)
 		{
 			uchar* s2_ = (uchar*)(ss2 + (i64)((nXSrc + i) * mm));
@@ -1006,7 +1006,7 @@ void _picture::text16n(i64 x, i64 y, std::string_view st, i64 n, uint c, uint bg
 				const ushort* ss2 = ss;
 				if (kk == 0)
 				{
-					uint* c2 = &data[(y + j * n + jj) * size.x + x + i0 * n];
+					uint* c2 = (uint*)&data[(y + j * n + jj) * size.x + x + i0 * n];
 					for (i64 i = i0; i < i1_; i++)
 					{
 						if (*ss2 & mask)
@@ -1120,7 +1120,7 @@ void _picture::text16(_ixy p, std::string_view st, uint c, uint bg)
 			const ushort* ss2 = ss;
 			if (kk == 0)
 			{
-				uint* c2 = &data[(p.y + j) * size.x + p.x + i0];
+				uint* c2 = (uint*)&data[(p.y + j) * size.x + p.x + i0];
 				for (i64 i = i0; i < i1_; i++)
 				{
 					if (*ss2++ & mask) *c2 = c;

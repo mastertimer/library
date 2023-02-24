@@ -23,18 +23,16 @@ union _color
 	void operator=(uint c2) { c = c2; }
 
 	bool operator==(const _color color) const { return c == color.c; }
+	bool operator==(const uint color) const { return c == color; }
 	bool operator!=(const _color color) const { return c != color.c; }
+	bool operator!=(const uint color) const { return c != color; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct _picture
 {
-	union
-	{
-		uint* data = nullptr;
-		_color* data2;
-	};
+	_color* data = nullptr;
 	_isize size;
 	bool transparent = false;
 	_iarea drawing_area; // разрешенная область для рисования
@@ -52,9 +50,9 @@ struct _picture
 
 	bool save_to_file(const std::filesystem::path& file_name);
 	bool load_from_file(const std::filesystem::path& file_name);
-	bool set_from_text(std::string_view s, uint c00, uint cc1);
+	bool set_from_text(std::string_view s, _color c00, _color cc1);
 
-	_color* scan_line(i64 y) const { return &data2[y * size.x]; }
+	_color* scan_line(i64 y) const { return &data[y * size.x]; }
 
 	virtual bool resize(_isize wh);
 	void set_drawing_area(const _iarea& q);
@@ -89,8 +87,8 @@ struct _picture
 private:
 	void set_transparent(const _color c) { transparent |= c.a != 0xff; } // *
 
-	_color& pixel(const i64 x, const i64 y) { return data2[y * size.x + x]; }
-	const _color& pixel(const i64 x, const i64 y) const { return data2[y * size.x + x]; }
+	_color& pixel(const i64 x, const i64 y) { return data[y * size.x + x]; }
+	const _color& pixel(const i64 x, const i64 y) const { return data[y * size.x + x]; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
