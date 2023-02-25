@@ -34,8 +34,6 @@ struct _picture
 {
 	_color* data = nullptr;
 	_isize size;
-	bool transparent = false;
-	_iarea drawing_area; // разрешенная область для рисования
 
 	_picture() = default;
 	explicit _picture(_isize r);
@@ -84,7 +82,10 @@ struct _picture
 	//	void text0(int x, int y, std::string_view s, int h, uint c, uint bg);
 	friend struct _picture_functions;
 
-private:
+protected:
+	bool transparent = false;
+	_iarea drawing_area; // разрешенная область для рисования
+
 	_color& pixel(const i64 x, const i64 y) { return data[y * size.x + x]; }
 	const _color& pixel(const i64 x, const i64 y) const { return data[y * size.x + x]; }
 };

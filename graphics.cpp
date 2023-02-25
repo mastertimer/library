@@ -1188,7 +1188,7 @@ void _picture::rectangle(_iarea oo, _color c)
 
 _stack& operator<<(_stack& o, _picture const& p)
 {
-	o << p.size << p.transparent;
+	o << p.size;
 	o.push_data(p.data, 4 * p.size.square());
 	return o;
 }
@@ -1196,9 +1196,10 @@ _stack& operator<<(_stack& o, _picture const& p)
 _stack& operator>>(_stack& o, _picture& p)
 {
 	_isize r;
-	o >> r >> p.transparent;
+	o >> r;
 	p.resize(r);
 	o.pop_data(p.data, 4 * p.size.square());
+	p.set_transparent();
 	return o;
 }
 
