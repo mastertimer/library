@@ -16,7 +16,7 @@ union _color
 	};
 
 	_color() = default;
-	_color(uint c2) : c(c2) {}
+	constexpr _color(uint c2) : c(c2) {}
 
 	operator uint() const { return c; }
 
@@ -27,6 +27,9 @@ union _color
 	bool operator!=(const _color color) const { return c != color.c; }
 	bool operator!=(const uint color) const { return c != color; }
 };
+
+constexpr _color black_color = 0xFF000000;
+constexpr _color white_color = 0xFFFFFFFF;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
