@@ -222,8 +222,9 @@ _wjson& _wjson::add(std::string_view name, const _picture& b, uint c00, uint cc1
 	if (b.size == _isize{ 24, 24 })
 	{
 		pak = true;
+		auto data = b.scan_line(0);
 		for (i64 i = 0; i < 576; i++)
-			if ((b.data[i] != c00) && (b.data[i] != cc1))
+			if ((data[i] != c00) && (data[i] != cc1))
 			{
 				pak = false;
 				break;
@@ -231,13 +232,14 @@ _wjson& _wjson::add(std::string_view name, const _picture& b, uint c00, uint cc1
 	}
 	if (!pak)
 	{
-		for (int j = 0; j < b.size.y; j++) add_mem(&b.data[j * b.size.x], b.size.x * 4ULL);
+		for (int j = 0; j < b.size.y; j++) add_mem(b.scan_line(j), b.size.x * 4ULL);
 	}
 	else
 	{
 		uchar a[72] = {};
+		auto data = b.scan_line(0);
 		for (i64 i = 0; i < 576; i++)
-			if (b.data[i] == cc1)
+			if (data[i] == cc1)
 				a[i >> 3] |= (1 << (i & 7));
 		add_mem(a, 72);
 	}
@@ -491,7 +493,7 @@ void _rjson::read(std::string_view name, _picture& b, uint c00, uint cc1)
 	int rx = (int)(temp[0].size() / 8);
 	b.resize({ rx, (i64)temp.size() });
 	for (int j = 0; j < temp.size(); j++)
-		if (!string_to_mem(temp[j], &b.data[j * b.size.x], b.size.x * 4))
+		if (!string_to_mem(temp[j], b.scan_line(j), b.size.x * 4))
 		{
 			error = 12;
 			return;

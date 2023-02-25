@@ -32,7 +32,6 @@ union _color
 
 struct _picture
 {
-	_color* data = nullptr;
 	_isize size;
 
 	_picture() = default;
@@ -54,7 +53,6 @@ struct _picture
 
 	virtual bool resize(_isize wh);
 	void set_drawing_area(const _iarea& q);
-	void reset_drawing_area();
 
 	void clear(_color c = 0xFF000000); // *
 	void set_transparent(); // * узнать, есть ли прозрачные пиксели
@@ -83,6 +81,7 @@ struct _picture
 	friend struct _picture_functions;
 
 protected:
+	_color* data = nullptr;
 	bool transparent = false;
 	_iarea drawing_area; // разрешенная область для рисования
 

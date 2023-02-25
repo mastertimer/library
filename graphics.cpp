@@ -225,11 +225,6 @@ void _picture::set_drawing_area(const _iarea& q)
 	drawing_area = q & size;
 }
 
-void _picture::reset_drawing_area()
-{
-	drawing_area = size;
-}
-
 _picture::~_picture()
 {
 	delete[] data;
@@ -1189,7 +1184,7 @@ void _picture::rectangle(_iarea oo, _color c)
 _stack& operator<<(_stack& o, _picture const& p)
 {
 	o << p.size;
-	o.push_data(p.data, 4 * p.size.square());
+	o.push_data(p.scan_line(0), 4 * p.size.square());
 	return o;
 }
 
@@ -1198,7 +1193,7 @@ _stack& operator>>(_stack& o, _picture& p)
 	_isize r;
 	o >> r;
 	p.resize(r);
-	o.pop_data(p.data, 4 * p.size.square());
+	o.pop_data(p.scan_line(0), 4 * p.size.square());
 	p.set_transparent();
 	return o;
 }
