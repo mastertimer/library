@@ -228,7 +228,7 @@ _ui::_ui()
 
 void _ui::add_changed_area(_area a)
 {
-	changed_area |= (a & canvas.size);
+	changed_area |= (a & canvas.get_size());
 }
 
 void _ui::draw(_isize r)
@@ -236,7 +236,7 @@ void _ui::draw(_isize r)
 	if (canvas.resize(r)) changed_area = r;
 	if (changed_area.empty()) return;
 	canvas.set_drawing_area(changed_area);
-	changed_area &= canvas.size;
+	changed_area &= canvas.get_size();
 	canvas.clear(cc0);
 	n_ko->ris(_trans());
 	changed_area = _area();
@@ -497,10 +497,10 @@ void _e_button::ris2(_trans tr)
 {
 	_area oo = tr(local_area);
 	uint c = 0;
-	if (picture.size.x * picture.size.y > 0)
+	if (!picture.get_size().empty())
 	{
-		i64 rx2 = (i64)(picture.size.x * tr.scale + 0.5);
-		i64 ry2 = (i64)(picture.size.y * tr.scale + 0.5);
+		i64 rx2 = (i64)(picture.get_size().x * tr.scale + 0.5);
+		i64 ry2 = (i64)(picture.get_size().y * tr.scale + 0.5);
 		_ixy ce = oo.center();
 		ui->canvas.stretch_draw(&picture, ce.x - rx2 / 2, ce.y - ry2 / 2, tr.scale);
 	}

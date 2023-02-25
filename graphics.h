@@ -32,8 +32,6 @@ union _color
 
 struct _picture
 {
-	_isize size;
-
 	_picture() = default;
 	explicit _picture(_isize r);
 	explicit _picture(_isize r, _color c);
@@ -51,6 +49,7 @@ struct _picture
 
 	_color* scan_line(i64 y) const;
 
+	const _isize& get_size() const { return size; }
 	virtual bool resize(_isize wh);
 	void set_drawing_area(const _iarea& q);
 
@@ -77,11 +76,9 @@ struct _picture
 	void stretch_draw(_picture* bm, i64 x, i64 y, double m);
 	void stretch_draw_speed(_picture* bm, i64 nXDest, i64 nYDest, double m);
 
-	//	void text0(int x, int y, std::string_view s, int h, uint c, uint bg);
-	friend struct _picture_functions;
-
 protected:
 	_color* data = nullptr;
+	_isize size;
 	bool transparent = false;
 	_iarea drawing_area; // разрешенная область для рисования
 
