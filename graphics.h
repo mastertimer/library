@@ -65,8 +65,8 @@ struct _picture
 
 	void draw(_ixy r, const _picture& bm);
 
+	void line(_xy p1, _xy p2, _color c, double l); // линия заданной толщины
 	void line(_ixy p1, _ixy p2, _color c);
-	void lines(_xy p1, _xy p2, double l, uint c); // точная линия заданной толщины
 	void vertical_line(_xy p1, i64 y2, _color c);
 	void horizontal_line(_xy p1, i64 x2, _color c);
 	template <typename _t> void line(_ixy p1, _ixy p2, _color c);

@@ -510,9 +510,9 @@ void _picture::line(_ixy p1, _ixy p2, _color c)
 	line<_color_overlay>(p1, p2, c);
 }
 
-void _picture::lines(_xy p1, _xy p2, double l, uint c)
+void _picture::line(_xy p1, _xy p2, _color c, double l)
 {
-	uint kk = 255 - (c >> 24);
+	uint kk = 255 - (c.c >> 24);
 	if (kk == 0xFF) return; // полностью прозрачная
 	if (p1.y > p2.y) std::swap(p1, p2);
 	l *= 0.5; // половина толщины
@@ -544,9 +544,9 @@ void _picture::lines(_xy p1, _xy p2, double l, uint c)
 	double drr = dy * ll_1;
 	double temp1 = dy * 0.5 - dx * 0.5 + x2y1_y2x1;
 	uint   k2 = 256 - kk;
-	uint   red = (c & 255);
-	uint   green = ((c >> 8) & 255);
-	uint   blue = ((c >> 16) & 255);
+	uint   red = (c.c & 255);
+	uint   green = ((c.c >> 8) & 255);
+	uint   blue = ((c.c >> 16) & 255);
 	uint   d1 = red * k2;
 	uint   d2 = green * k2;
 	uint   d3 = blue * k2;
