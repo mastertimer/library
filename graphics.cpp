@@ -9,7 +9,6 @@ struct _picture_functions : public _picture
 	t_t void line5_y(_ixy p1, _ixy p2, _color c);
 	t_t void line5_x_compact(_ixy p1, _ixy p2, _color c);
 	t_t void line5_y_compact(_ixy p1, _ixy p2, _color c);
-	t_t void horizontal_line(_iinterval x, i64 y, _color c);
 	t_t void fill_rectangle3(_iarea r, _color c);
 	template <typename _t, typename _b> void fill_circle3(_iarea area, _xy p, double r, _color c);
 	template <typename _t, typename _b> void ring3(_iarea area, _xy p, double r, double r2, _color c);
@@ -336,13 +335,6 @@ void _picture::clear(_color c)
 	}
 }
 
-t_t void _picture_functions::horizontal_line(_iinterval x, i64 y, _color c)
-{
-	_t cmix(c);
-	_color* cс_max = &pixel(x.max, y);
-	for (auto cc = &pixel(x.min, y); cc < cс_max; cc++) cmix.mix(*cc);
-}
-
 t_t void _picture_functions::line5_x_compact(_ixy p1, _ixy p2, _color c)
 {
 	double y = p1.y + 0.5;
@@ -471,30 +463,39 @@ t_t void _picture_functions::line5(_ixy p1, _ixy p2, _color c)
 {
 	if (p1.y == p2.y)
 	{ 
-		if (!drawing_area.y.test(p1.y)) return;
-		auto interval = (_iinterval(p1.x) << p2.x) & drawing_area.x;
-		if (interval.empty()) return;
-		horizontal_line<_t>(interval, p2.y, c);
+		horizontal_line<_t>(p1, p2.x, c);
 		return;
 	}
 	if (p1.x == p2.x)
 	{ 
-		vertical_line<_t>(p1.x, p1.y, p2.y, c);
+		vertical_line<_t>(p1, p2.y, c);
 		return;
 	}
 	(abs(p1.x - p2.x) >= abs(p1.y - p2.y)) ? line5_x<_t>(p1, p2, c) : line5_y<_t>(p1, p2, c);
 }
 
-t_t void _picture::vertical_line(i64 x, i64 y1, i64 y2, _color c)
-{ // *
+t_t void _picture::vertical_line(_xy p1, i64 y2, _color c)
+{ // **
 	if (c.a == 0) return;
-	if (!drawing_area.x.test(x)) return;
-	auto interval = (_iinterval(y1) << y2) & drawing_area.y;
+	if (!drawing_area.x.test(p1.x)) return;
+	auto interval = (_iinterval(p1.y) << y2) & drawing_area.y;
 	if (interval.empty()) return;
 	if (std::is_same<_color_substitution, _t>::value) transparent |= c.a != 0xff;
 	_t cmix(c);
-	_color* cс_max = &pixel(x, interval.max);
-	for (auto cc = &pixel(x, interval.min); cc < cс_max; cc += size.x) cmix.mix(*cc);
+	_color* cс_max = &pixel(p1.x, interval.max);
+	for (auto cc = &pixel(p1.x, interval.min); cc < cс_max; cc += size.x) cmix.mix(*cc);
+}
+
+t_t void _picture::horizontal_line(_xy p1, i64 x2, _color c)
+{ // *
+	if (c.a == 0) return;
+	if (!drawing_area.y.test(p1.y)) return;
+	auto interval = (_iinterval(p1.x) << x2) & drawing_area.x;
+	if (interval.empty()) return;
+	if (std::is_same<_color_substitution, _t>::value) transparent |= c.a != 0xff;
+	_t cmix(c);
+	_color* cс_max = &pixel(interval.max, p1.y);
+	for (auto cc = &pixel(interval.min, p1.y); cc < cс_max; cc++) cmix.mix(*cc);
 }
 
 void _picture::line(_ixy p1, _ixy p2, _color c, bool rep)
@@ -843,7 +844,7 @@ void _picture::stretch_draw(_picture* bm, i64 x, i64 y, double m)
 
 t_t void _picture_functions::fill_rectangle3(_iarea r, _color c)
 {
-	if (r.x.length() == 1) { vertical_line<_t>(r.x.min, r.y.min, r.y.max - 1, c); return; }
+	if (r.x.length() == 1) { vertical_line<_t>(r.top_left(), r.y.max - 1, c); return; }
 	_t cmix(c);
 	for (i64 y = r.y.min; y < r.y.max; y++)
 	{
