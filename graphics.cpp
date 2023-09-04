@@ -4,11 +4,6 @@
 
 struct _picture_functions : public _picture
 {
-	t_t void line5(_ixy p1, _ixy p2, _color c);
-	t_t void line5_x(_ixy p1, _ixy p2, _color c);
-	t_t void line5_y(_ixy p1, _ixy p2, _color c);
-	t_t void line5_x_compact(_ixy p1, _ixy p2, _color c);
-	t_t void line5_y_compact(_ixy p1, _ixy p2, _color c);
 	t_t void fill_rectangle3(_iarea r, _color c);
 	template <typename _t, typename _b> void fill_circle3(_iarea area, _xy p, double r, _color c);
 	template <typename _t, typename _b> void ring3(_iarea area, _xy p, double r, double r2, _color c);
@@ -335,7 +330,7 @@ void _picture::clear(_color c)
 	}
 }
 
-t_t void _picture_functions::line5_x_compact(_ixy p1, _ixy p2, _color c)
+t_t void _picture::line5_x_compact(_ixy p1, _ixy p2, _color c)
 {
 	double y = p1.y + 0.5;
 	double dy_dx = double(p2.y - p1.y) / (p2.x - p1.x);
@@ -350,7 +345,7 @@ t_t void _picture_functions::line5_x_compact(_ixy p1, _ixy p2, _color c)
 	for (i64 x = p1.x; x <= p2.x; x++, y += dy_dx) cc.mix(pixel(x, (i64)y));
 }
 
-t_t void _picture_functions::line5_y_compact(_ixy p1, _ixy p2, _color c)
+t_t void _picture::line5_y_compact(_ixy p1, _ixy p2, _color c)
 {
 	double x = p1.x + 0.5;
 	double dx_dy = double(p2.x - p1.x) / (p2.y - p1.y);
@@ -365,8 +360,10 @@ t_t void _picture_functions::line5_y_compact(_ixy p1, _ixy p2, _color c)
 	for (i64 y = p1.y; y <= p2.y; y++, x += dx_dy) cc.mix(pixel((i64)x, y));
 }
 
-t_t void _picture_functions::line5_x(_ixy p1, _ixy p2, _color c)
+t_t void _picture::line5_x(_ixy p1, _ixy p2, _color c)
 {
+	if (c.a == 0) return;
+	if (std::is_same<_color_substitution, _t>::value) transparent |= c.a != 0xff;
 	if (p1.x > p2.x) std::swap(p1, p2);
 	if (drawing_area.y.test(p1.y) && drawing_area.y.test(p2.y))
 	{
@@ -412,8 +409,10 @@ t_t void _picture_functions::line5_x(_ixy p1, _ixy p2, _color c)
 		for (i64 x = p1.x; (x <= p2.x) && (y >= drawing_area.y.min); x++, y += dy_dx) cc.mix(pixel(x, (i64)y));
 }
 
-t_t void _picture_functions::line5_y(_ixy p1, _ixy p2, _color c)
+t_t void _picture::line5_y(_ixy p1, _ixy p2, _color c)
 {
+	if (c.a == 0) return;
+	if (std::is_same<_color_substitution, _t>::value) transparent |= c.a != 0xff;
 	if (p1.y > p2.y) std::swap(p1, p2);
 	if (drawing_area.x.test(p1.x) && drawing_area.x.test(p2.x))
 	{
@@ -459,19 +458,18 @@ t_t void _picture_functions::line5_y(_ixy p1, _ixy p2, _color c)
 		for (i64 y = p1.y; (y <= p2.y) && (x >= drawing_area.x.min); y++, x += dx_dy) cc.mix(pixel((i64)x, y));
 }
 
-t_t void _picture_functions::line5(_ixy p1, _ixy p2, _color c)
+void _picture::vertical_line(_xy p1, i64 y2, _color c)
 {
-	if (p1.y == p2.y)
-	{ 
-		horizontal_line<_t>(p1, p2.x, c);
-		return;
-	}
-	if (p1.x == p2.x)
-	{ 
-		vertical_line<_t>(p1, p2.y, c);
-		return;
-	}
-	(abs(p1.x - p2.x) >= abs(p1.y - p2.y)) ? line5_x<_t>(p1, p2, c) : line5_y<_t>(p1, p2, c);
+	if (c.a == 0xff) { vertical_line<_color_substitution>(p1, y2, c); return; }
+	if (transparent) { vertical_line<_color_mixing>(p1, y2, c); return; }
+	vertical_line<_color_overlay>(p1, y2, c);
+}
+
+void _picture::horizontal_line(_xy p1, i64 x2, _color c)
+{
+	if (c.a == 0xff) { horizontal_line<_color_substitution>(p1, x2, c); return; }
+	if (transparent) { horizontal_line<_color_mixing>(p1, x2, c); return; }
+	horizontal_line<_color_overlay>(p1, x2, c);
 }
 
 t_t void _picture::vertical_line(_xy p1, i64 y2, _color c)
@@ -498,18 +496,18 @@ t_t void _picture::horizontal_line(_xy p1, i64 x2, _color c)
 	for (auto cc = &pixel(interval.min, p1.y); cc < cс_max; cc++) cmix.mix(*cc);
 }
 
-void _picture::line(_ixy p1, _ixy p2, _color c, bool rep)
+t_t void _picture::line(_ixy p1, _ixy p2, _color c)
 {
-	if (c.a == 0 && !rep) return;
-	if (rep || c.a == 0xff)
-	{
-		transparent |= c.a != 0xff;
-		((_picture_functions*)this)->line5<_color_substitution>(p1, p2, c);
-	}
-	else if (transparent)
-		((_picture_functions*)this)->line5<_color_mixing>(p1, p2, c);
-	else
-		((_picture_functions*)this)->line5<_color_overlay>(p1, p2, c);
+	if (p1.y == p2.y) { horizontal_line<_t>(p1, p2.x, c); return; }
+	if (p1.x == p2.x) { vertical_line<_t>(p1, p2.y, c); return; }
+	if (abs(p1.x - p2.x) >= abs(p1.y - p2.y)) line5_x<_t>(p1, p2, c); else line5_y<_t>(p1, p2, c);
+}
+
+void _picture::line(_ixy p1, _ixy p2, _color c)
+{
+	if (c.a == 0xff) { line<_color_substitution>(p1, p2, c); return; }
+	if (transparent) { line<_color_mixing>(p1, p2, c); return; }
+	line<_color_overlay>(p1, p2, c);
 }
 
 void _picture::lines(_xy p1, _xy p2, double l, uint c)
